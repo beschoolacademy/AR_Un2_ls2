@@ -1,0 +1,2055 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>be;school | مدرسة البرمجة - الدرس 2-2: تصميم أمن الشبكات</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        beschool: {
+                            orange: '#FF5500',
+                            orangeDark: '#E04A00',
+                            orangeLight: '#FFF4ED',
+                            navy: '#0B1B48',
+                            navyLight: '#14285D',
+                            navyDark: '#07112E',
+                            slate: '#334155',
+                            muted: '#64748B',
+                            border: '#E2E8F0',
+                            bg: '#F8FAFC',
+                            card: '#FFFFFF'
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'Segoe UI', 'Tahoma', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #F8FAFC;
+            color: #0B1B48;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .flashcard-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF5500;
+        }
+
+        .main-top-tab {
+            position: relative;
+            transition: all 0.25s ease;
+        }
+        .main-top-tab.active {
+            color: #FF5500;
+            background-color: #FFFFFF;
+            border-bottom: 3.5px solid #FF5500;
+            font-weight: 800;
+        }
+        .main-top-tab:not(.active) {
+            color: #64748B;
+            background-color: transparent;
+            border-bottom: 3.5px solid transparent;
+        }
+        .main-top-tab:not(.active):hover {
+            color: #0B1B48;
+            background-color: #F1F5F9;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-900 antialiased selection:bg-orange-500 selection:text-white font-sans">
+
+    <!-- 1. الشاشة الافتتاحية الأولى (#screen-landing) -->
+    <div id="screen-landing" class="min-h-screen flex flex-col bg-[#0d1527] fade-in">
+        <div class="w-full bg-[#0d1527] text-white px-4 py-3 border-b border-slate-800/80 flex items-center justify-between">
+            <button onclick="window.close()" class="w-9 h-9 rounded-full bg-slate-800/90 text-slate-300 hover:text-white flex items-center justify-center transition" title="إغلاق">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+            <span class="text-xs sm:text-sm font-bold text-slate-200 tracking-wide">
+                مراجعة الدرس 2-2 - Be School
+            </span>
+            <button class="w-9 h-9 rounded-full bg-slate-800/90 text-slate-300 hover:text-white flex items-center justify-center transition" title="خيارات">
+                <i class="fa-solid fa-ellipsis text-sm"></i>
+            </button>
+        </div>
+
+        <div class="bg-gradient-to-b from-white via-orange-50/20 to-white pt-10 pb-12 px-4 sm:px-6 text-center border-b border-slate-200/60">
+            <div class="max-w-md mx-auto space-y-4">
+                <div class="inline-flex flex-col items-center select-none">
+                    <div dir="ltr" class="flex items-baseline font-black text-4xl sm:text-5xl tracking-tight leading-none">
+                        <span class="text-beschool-orange font-black">be</span><span class="text-beschool-orange font-black">;</span><span class="text-beschool-navy font-black">school</span>
+                    </div>
+                    <span class="text-sm font-black text-beschool-navy tracking-wider mt-1.5">مدرسة البرمجة</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0B1B48] leading-tight pt-2">
+                    منصة Be School للمراجعة التفاعلية
+                </h1>
+                <p class="text-xs text-slate-500 font-bold max-w-xs mx-auto">
+                    البرمجة والذكاء الاصطناعي • الصف الثاني الثانوي
+                </p>
+            </div>
+        </div>
+
+        <div class="flex-grow flex flex-col justify-center max-w-md w-full mx-auto px-4 py-8 space-y-5">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-100 text-center space-y-4">
+                <div class="inline-flex items-center gap-1.5 bg-orange-100 text-beschool-orange px-3 py-1 rounded-full text-xs font-black">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>الوحدة الثانية: الأمن السيبراني • الدرس 2-2</span>
+                </div>
+                
+                <h2 class="text-xl sm:text-2xl font-black text-beschool-navy leading-snug">
+                    تصميم أمن الشبكات
+                </h2>
+
+                <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    جدار الحماية (Firewall)، الشبكة الافتراضية الخاصة (VPN)، المنطقة المعزولة (DMZ)، استراتيجية الدفاع في العمق، ونهج انعدام الثقة (Zero Trust).
+                </p>
+
+                <div class="pt-2">
+                    <button onclick="goToNameEntryScreen()" class="w-full py-3.5 px-6 rounded-2xl bg-beschool-orange hover:bg-beschool-orangeDark text-white font-black text-base shadow-lg shadow-orange-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2">
+                        <span>ابدأ المراجعة</span>
+                        <span class="text-lg">🎯</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-md text-center">
+                <p class="text-[11px] sm:text-xs text-slate-600 font-bold leading-relaxed">
+                    عادةً يصلك رابط المراجعة مباشرة من معلمك لدرس محدد — مرحباً بك في مراجعة الدرس الثاني من الوحدة الثانية.
+                </p>
+            </div>
+        </div>
+
+        <div class="py-4 text-center text-[11px] text-slate-400">
+            be;school © مدرسة البرمجة
+        </div>
+    </div>
+
+    <!-- 2. شاشة تسجيل اسم الطالب (#screen-name-entry) -->
+    <div id="screen-name-entry" class="hidden min-h-screen flex flex-col bg-[#0d1527] fade-in">
+        <div class="w-full bg-[#0d1527] text-white px-4 py-3 border-b border-slate-800/80 flex items-center justify-between">
+            <button onclick="goToLandingScreen()" class="w-9 h-9 rounded-full bg-slate-800/90 text-slate-300 hover:text-white flex items-center justify-center transition" title="رجوع">
+                <i class="fa-solid fa-arrow-right text-sm"></i>
+            </button>
+            <span class="text-xs sm:text-sm font-bold text-slate-200">
+                تسجيل اسم الطالب
+            </span>
+            <div class="w-9"></div>
+        </div>
+
+        <div class="flex-grow flex items-center justify-center p-4">
+            <div class="max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6">
+                <div class="text-center space-y-2">
+                    <div class="w-16 h-16 rounded-2xl bg-orange-100 text-beschool-orange mx-auto flex items-center justify-center text-2xl shadow-inner">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-black text-beschool-navy">
+                        سجل اسمك للمتابعة
+                    </h3>
+                    <p class="text-xs text-slate-500 font-medium">
+                        أدخل اسمك لعرض نتيجتك وتقييمك في اختبار تصميم أمن الشبكات (50 سؤالاً تفاعلياً)
+                    </p>
+                </div>
+
+                <div class="space-y-2 text-right">
+                    <label for="studentNameInput" class="block text-xs font-black text-beschool-navy">
+                        اسم الطالب / الطالبة:
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="studentNameInput" 
+                            dir="rtl"
+                            placeholder="اكتب اسمك هنا..." 
+                            maxlength="40"
+                            onkeypress="if(event.key === 'Enter') startPlatformWithStudentName()"
+                            class="w-full py-3.5 pr-11 pl-4 rounded-xl border-2 border-slate-200 focus:border-beschool-orange focus:outline-none text-sm font-bold text-beschool-navy placeholder:text-slate-400 transition"
+                        />
+                        <i class="fa-regular fa-id-card absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    </div>
+                    <div id="nameErrorAlert" class="hidden text-[11px] font-bold text-rose-600 flex items-center gap-1 mt-1">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>يرجى إدخال اسمك للمتابعة!</span>
+                    </div>
+                </div>
+
+                <button onclick="startPlatformWithStudentName()" class="w-full py-3.5 px-6 rounded-2xl bg-beschool-orange hover:bg-beschool-orangeDark text-white font-black text-sm sm:text-base shadow-lg shadow-orange-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2">
+                    <span>دخول المنصة والمراجعة</span>
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. المنصة التعليمية الرئيسية (#screen-main-platform) -->
+    <div id="screen-main-platform" class="hidden min-h-screen flex flex-col bg-[#F8FAFC] fade-in">
+        <header class="sticky top-0 z-50 bg-white border-b border-beschool-border shadow-xs">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="h-20 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="flex flex-col select-none cursor-pointer group items-center sm:items-start" onclick="switchNavTab('study')">
+                            <div dir="ltr" class="flex items-baseline font-black text-3xl sm:text-4xl tracking-tight leading-none">
+                                <span class="text-beschool-orange font-black">be</span><span class="text-beschool-orange font-black">;</span><span class="text-beschool-navy font-black">school</span>
+                            </div>
+                            <span class="text-xs sm:text-sm font-black text-beschool-navy tracking-wider mt-1 text-center w-full group-hover:text-beschool-orange transition-colors">مدرسة البرمجة</span>
+                        </div>
+                        <div class="hidden md:block h-10 w-px bg-beschool-border mr-2"></div>
+                        <div class="hidden md:flex flex-col">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-orange-50 text-beschool-orange border border-orange-200/80 w-fit">
+                                <i class="fa-solid fa-graduation-cap text-[10px]"></i>
+                                منهج الحاسب والذكاء الاصطناعي
+                            </span>
+                            <span class="text-xs font-bold text-beschool-slate mt-1">الصف الثاني الثانوي • الوحدة الثانية</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="flex items-center gap-2 bg-orange-50/80 border border-orange-200 px-3 py-1.5 rounded-xl">
+                            <i class="fa-solid fa-user-check text-beschool-orange text-xs"></i>
+                            <span id="headerStudentName" class="text-xs font-black text-beschool-navy max-w-[110px] sm:max-w-xs truncate">
+                                طالب Be School
+                            </span>
+                        </div>
+                        <button onclick="exitToLanding()" title="خروج" class="p-2.5 rounded-xl border border-beschool-border hover:bg-rose-50 hover:text-rose-600 text-beschool-slate text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                            <span class="hidden sm:inline">خروج</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 border-t border-beschool-border">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <nav class="flex items-center justify-center sm:justify-start gap-1 sm:gap-3 text-xs sm:text-base font-bold overflow-x-auto py-1">
+                        <button id="tabNav-study" onclick="switchNavTab('study')" class="main-top-tab active flex-1 sm:flex-initial py-3 px-3 sm:px-5 rounded-t-xl flex items-center justify-center gap-2 shrink-0">
+                            <i class="fa-solid fa-book-open text-sm sm:text-base"></i>
+                            <span>1. الشرح التفاعلي</span>
+                        </button>
+                        <button id="tabNav-revision" onclick="switchNavTab('revision')" class="main-top-tab flex-1 sm:flex-initial py-3 px-3 sm:px-5 rounded-t-xl flex items-center justify-center gap-2 shrink-0">
+                            <i class="fa-solid fa-layer-group text-sm sm:text-base"></i>
+                            <span>2. المراجعة السريعة</span>
+                        </button>
+                        <button id="tabNav-book-solutions" onclick="switchNavTab('book-solutions')" class="main-top-tab flex-1 sm:flex-initial py-3 px-3 sm:px-5 rounded-t-xl flex items-center justify-center gap-2 shrink-0">
+                            <i class="fa-solid fa-book-bookmark text-sm sm:text-base text-beschool-orange"></i>
+                            <span>3. حل تمارين الكتاب</span>
+                        </button>
+                        <button id="tabNav-questions" onclick="switchNavTab('questions')" class="main-top-tab flex-1 sm:flex-initial py-3 px-3 sm:px-5 rounded-t-xl flex items-center justify-center gap-2 shrink-0">
+                            <i class="fa-solid fa-circle-question text-sm sm:text-base"></i>
+                            <span>4. الاختبار (50 سؤالاً)</span>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+            <!-- Lesson Header Banner -->
+            <div class="bg-white rounded-2xl p-5 sm:p-7 border border-beschool-border shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1.5">
+                    <div class="flex items-center gap-2 text-xs font-bold text-beschool-muted">
+                        <span>الوحدة الثانية: الأمن السيبراني</span>
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                        <span class="text-beschool-orange font-black">الدرس 2-2</span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-black text-beschool-navy">
+                        تصميم أمن الشبكات (Network Security Design)
+                    </h1>
+                    <p class="text-xs sm:text-sm text-beschool-muted">
+                        حماية البنية التحتية، جدران الحماية، قنوات الـ VPN، عزل الخوادم العامة بالـ DMZ، الدفاع متعدد الطبقات، ومفهوم الثقة الصفرية (Zero Trust).
+                    </p>
+                </div>
+                <button onclick="switchNavTab('questions')" class="px-5 py-2.5 rounded-xl bg-beschool-orange hover:bg-beschool-orangeDark text-white text-xs sm:text-sm font-black flex items-center gap-2 shadow-xs transition">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>دخول الاختبار (50 سؤالاً)</span>
+                </button>
+            </div>
+
+            <!-- ========================================================================= -->
+            <!-- 1. تبويب الشرح (STUDY TAB) -->
+            <!-- ========================================================================= -->
+            <div id="pane-study" class="space-y-6">
+                <!-- فكرة مدخل الدرس -->
+                <div class="bg-gradient-to-r from-beschool-navy via-beschool-navyLight to-[#1e3a8a] text-white rounded-3xl p-6 sm:p-8 shadow-md relative overflow-hidden">
+                    <div class="relative z-10 space-y-3">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black bg-beschool-orange text-white shadow-xs">
+                            <i class="fa-solid fa-network-wired"></i>
+                            <span>تأمين القلاع الرقمية: لماذا لا يكفي جدار حماية واحد؟</span>
+                        </div>
+                        <h2 class="text-xl sm:text-2xl lg:text-3xl font-black leading-snug">
+                            كيف تصمم المؤسسة شبكتها بحيث إذا اخترق المهاجم خط الدفاع الأول يظل النظام الداخلي آمناً تماماً؟
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed max-w-3xl">
+                            في الدرس السابق شفرنا البيانات على مستوى الاتصال والمستخدم؛ لكن في بيئة المؤسسات والشركات، التهديد يستهدف الشبكة ككل. الأمان الحقيقي لا ينبع من باب حديدي واحد، بل من طبقات أمنية متكاملة تتضافر لحصار الخطر في أضيق نطاق ممكن.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- المحور الأول: جدار الحماية (Firewall) والمحاكاة -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-5">
+                    <div class="border-b border-beschool-border pb-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-black bg-beschool-navy text-white px-2.5 py-0.5 rounded-md">المحور الأول</span>
+                            <h3 class="text-lg sm:text-xl font-black text-beschool-navy mt-1">جدار الحماية (Firewall): حارس بوابات الشبكة</h3>
+                        </div>
+                        <span class="text-xs font-bold text-beschool-muted">نظام تحكم في المرور بحسب القواعد</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                            <strong class="font-black text-beschool-navy text-sm block">1. موقعه في الشبكة:</strong>
+                            <p class="text-slate-600 leading-relaxed">
+                                يوضع عند حدود الشبكة الخارجية (بين المؤسسة والإنترنت)، أو داخلياً للفصل بين الأقسام (مثل شبكة الطلاب وشبكة الإدارة)، أو على جهاز مضيف بذاته.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                            <strong class="font-black text-beschool-navy text-sm block">2. آلية العمل (Rules):</strong>
+                            <p class="text-slate-600 leading-relaxed">
+                                يفحص ترويسة الحزم (عنوان IP المصدر والوجهة، وأرقام المنافذ Ports، ونوع البروتوكول) ويسمح بالمرور أو يسقط الحزمة وفق سياسة محددة مسبقاً.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                            <strong class="font-black text-beschool-navy text-sm block">3. سيناريو واقعي:</strong>
+                            <p class="text-slate-600 leading-relaxed">
+                                السماح للجمهور بالوصول لخادم الويب عبر المنفذ 443، مع المنع المطلق لأي اتصال خارجي مباشر بقاعدة البيانات عبر المنفذ 1433 أو 3306.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- محاكي فحص الحزم التفاعلي -->
+                    <div class="p-5 rounded-2xl bg-slate-50 border border-beschool-border space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                            <span class="text-xs font-black text-beschool-navy flex items-center gap-1.5">
+                                <i class="fa-solid fa-sliders text-beschool-orange"></i>
+                                <span>محاكي فحص حزم جدار الحماية (اختبر قرارات الجدار الناري):</span>
+                            </span>
+                            <span class="text-[11px] font-mono font-bold text-beschool-orange" id="fwTestCounter">الحزم المفحوصة: 0</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <button onclick="testFwPacket('web')" class="p-3 rounded-xl border border-emerald-300 bg-emerald-50 text-right hover:bg-emerald-100 transition space-y-1">
+                                <strong class="block text-emerald-950 font-black">حزمة HTTPS (منفذ 443)</strong>
+                                <span class="text-emerald-700 text-[11px] block">طلب تصفح موقع الشركة</span>
+                            </button>
+                            <button onclick="testFwPacket('ssh')" class="p-3 rounded-xl border border-rose-300 bg-rose-50 text-right hover:bg-rose-100 transition space-y-1">
+                                <strong class="block text-rose-950 font-black">حزمة SSH (منفذ 22)</strong>
+                                <span class="text-rose-700 text-[11px] block">محاولة وصول خارجي غير مصرح</span>
+                            </button>
+                            <button onclick="testFwPacket('db')" class="p-3 rounded-xl border border-purple-300 bg-purple-50 text-right hover:bg-purple-100 transition space-y-1">
+                                <strong class="block text-purple-950 font-black">حزمة SQL (منفذ 1433)</strong>
+                                <span class="text-purple-700 text-[11px] block">اتصال مباشر بقاعدة البيانات من الإنترنت</span>
+                            </button>
+                        </div>
+                        <div id="fwDecisionBox" class="p-4 rounded-xl bg-white border border-slate-200 flex items-start gap-3">
+                            <div id="fwDecisionIcon" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-lg font-bold shrink-0">
+                                <i class="fa-solid fa-shield"></i>
+                            </div>
+                            <div class="space-y-1 text-right">
+                                <h5 id="fwDecisionTitle" class="text-xs sm:text-sm font-black text-beschool-navy">جدار الحماية جاهز للمراقبة</h5>
+                                <p id="fwDecisionDesc" class="text-xs text-slate-600 leading-relaxed">اضغط على أحد أنواع الحزم أعلاه لتشاهد قرار جدار الحماية وتبريره الأمني.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- المحور الثاني: الشبكة الافتراضية الخاصة (VPN) -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-4">
+                    <div class="border-b border-beschool-border pb-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-black bg-beschool-navy text-white px-2.5 py-0.5 rounded-md">المحور الثاني</span>
+                            <h3 class="text-lg sm:text-xl font-black text-beschool-navy mt-1">الشبكة الافتراضية الخاصة (VPN): نفق مشفر عبر الفضاء العام</h3>
+                        </div>
+                        <span class="text-xs font-bold text-beschool-muted">حماية الاتصال عن بعد وربط الفروع</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                            <strong class="font-black text-beschool-navy text-sm block">مبدأ عمل الـ VPN:</strong>
+                            <p class="text-slate-600 leading-relaxed text-xs">
+                                ينشئ قناة اتصال منطقية مشفرة (Encrypted Tunnel) عبر بنية الإنترنت العامة غير الموثوقة. يشفر المحتوى بحيث إذا اعترضه متجسس على شبكة Wi-Fi عامة يراه رموزاً عشوائية مبهمة.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                            <strong class="font-black text-beschool-navy text-sm block">أبرز مجالات الاستخدام:</strong>
+                            <ul class="space-y-1 text-slate-600 text-xs">
+                                <li>• <strong>العمل عن بعد:</strong> تمكين الموظف من منزله من الوصول لخوادم وملفات العمل كأنه داخل المقر.</li>
+                                <li>• <strong>ربط فروع المؤسسة:</strong> ربط فرع القاهرة بفرع الإسكندرية عبر نفق آمن كشبكة داخلية خاصة واحدة.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- المحور الثالث: المنطقة المعزولة (DMZ) ومخططها المعماري -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-5">
+                    <div class="border-b border-beschool-border pb-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-black bg-beschool-navy text-white px-2.5 py-0.5 rounded-md">المحور الثالث</span>
+                            <h3 class="text-lg sm:text-xl font-black text-beschool-navy mt-1">المنطقة المعزولة (DMZ - Demilitarized Zone): حماية القلب الحساس</h3>
+                        </div>
+                        <span class="text-xs font-bold text-beschool-muted">فصل الخوادم العامة عن الشبكة الداخلية</span>
+                    </div>
+
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        منطقة شبكية فرعية مستقلة تفصلها جدران حماية عن الشبكة الداخلية وعن الإنترنت. تُخصص لاستضافة الخوادم التي يحتاج الجمهور الخارجي للوصول إليها مباشرة (خوادم الويب، خوادم البريد الإلكتروني).
+                    </p>
+
+                    <!-- الرسم المعماري التفاعلي للـ DMZ المتطابق مع الشكل 2.2.1 -->
+                    <div class="w-full overflow-x-auto bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <svg viewBox="0 0 760 210" class="w-full h-auto min-w-[650px] select-none font-sans" dir="ltr">
+                            <!-- External Internet -->
+                            <g transform="translate(10, 40)">
+                                <rect x="0" y="0" width="110" height="130" rx="10" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5"/>
+                                <circle cx="55" cy="45" r="20" fill="#0284C7"/>
+                                <text x="55" y="85" font-size="11" font-weight="900" fill="#0B1B48" text-anchor="middle">الإنترنت العام</text>
+                                <text x="55" y="105" font-size="9" font-weight="700" fill="#64748B" text-anchor="middle">المستخدمون / مهاجم</text>
+                            </g>
+
+                            <!-- Outer Firewall -->
+                            <g transform="translate(145, 50)">
+                                <rect x="0" y="0" width="35" height="110" rx="6" fill="#FF5500"/>
+                                <line x1="0" y1="30" x2="35" y2="30" stroke="#FFF" stroke-width="1.5"/>
+                                <line x1="0" y1="60" x2="35" y2="60" stroke="#FFF" stroke-width="1.5"/>
+                                <line x1="0" y1="90" x2="35" y2="90" stroke="#FFF" stroke-width="1.5"/>
+                                <text x="17" y="125" font-size="8" font-weight="900" fill="#E04A00" text-anchor="middle">جدار خارجي</text>
+                            </g>
+
+                            <!-- DMZ Zone -->
+                            <g transform="translate(205, 20)">
+                                <rect x="0" y="0" width="220" height="170" rx="12" fill="#FFF7ED" stroke="#FDBA74" stroke-width="2" stroke-dasharray="5 4"/>
+                                <rect x="25" y="8" width="170" height="20" rx="4" fill="#EA580C"/>
+                                <text x="110" y="22" font-size="10" font-weight="900" fill="#FFFFFF" text-anchor="middle">المنطقة المعزولة (DMZ)</text>
+                                
+                                <g transform="translate(25, 45)">
+                                    <rect x="0" y="0" width="75" height="50" rx="6" fill="#0B1B48"/>
+                                    <circle cx="15" cy="15" r="3" fill="#10B981"/>
+                                    <text x="37" y="32" font-size="9" font-weight="900" fill="#FFF" text-anchor="middle">خادم الويب</text>
+                                </g>
+                                <g transform="translate(120, 45)">
+                                    <rect x="0" y="0" width="75" height="50" rx="6" fill="#0B1B48"/>
+                                    <circle cx="15" cy="15" r="3" fill="#38BDF8"/>
+                                    <text x="37" y="32" font-size="9" font-weight="900" fill="#FFF" text-anchor="middle">خادم البريد</text>
+                                </g>
+                                <rect x="20" y="115" width="180" height="40" rx="6" fill="#FED7AA"/>
+                                <text x="110" y="132" font-size="9" font-weight="900" fill="#9A3412" text-anchor="middle">خوادم مواجهة للإنترنت</text>
+                                <text x="110" y="146" font-size="8" font-weight="700" fill="#9A3412" text-anchor="middle">لو اختُرقت تظل الشبكة الداخلية محمية</text>
+                            </g>
+
+                            <!-- Inner Firewall -->
+                            <g transform="translate(450, 50)">
+                                <rect x="0" y="0" width="35" height="110" rx="6" fill="#0B1B48"/>
+                                <line x1="0" y1="30" x2="35" y2="30" stroke="#FFF" stroke-width="1.5"/>
+                                <line x1="0" y1="60" x2="35" y2="60" stroke="#FFF" stroke-width="1.5"/>
+                                <line x1="0" y1="90" x2="35" y2="90" stroke="#FFF" stroke-width="1.5"/>
+                                <text x="17" y="125" font-size="8" font-weight="900" fill="#0B1B48" text-anchor="middle">جدار داخلي</text>
+                            </g>
+
+                            <!-- Internal Secure LAN -->
+                            <g transform="translate(510, 25)">
+                                <rect x="0" y="0" width="235" height="160" rx="12" fill="#ECFDF5" stroke="#10B981" stroke-width="2"/>
+                                <rect x="35" y="8" width="165" height="20" rx="4" fill="#059669"/>
+                                <text x="117" y="22" font-size="10" font-weight="900" fill="#FFFFFF" text-anchor="middle">الشبكة الداخلية (المنظمة)</text>
+                                
+                                <g transform="translate(20, 45)">
+                                    <rect x="0" y="0" width="85" height="50" rx="6" fill="#047857"/>
+                                    <text x="42" y="32" font-size="9" font-weight="900" fill="#FFF" text-anchor="middle">قاعدة البيانات</text>
+                                    <text x="42" y="65" font-size="8" font-weight="900" fill="#065F46" text-anchor="middle">بيانات سرية</text>
+                                </g>
+                                <g transform="translate(130, 45)">
+                                    <rect x="0" y="0" width="85" height="50" rx="6" fill="#0F766E"/>
+                                    <text x="42" y="32" font-size="9" font-weight="900" fill="#FFF" text-anchor="middle">حواسيب الموظفين</text>
+                                    <text x="42" y="65" font-size="8" font-weight="900" fill="#065F46" text-anchor="middle">أجهزة شخصية</text>
+                                </g>
+                                <text x="117" y="145" font-size="9" font-weight="900" fill="#065F46" text-anchor="middle">ممنوع الوصول الخارجي المباشر إطلاقاً</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- المحور الرابع: الدفاع في العمق ونهج انعدام الثقة (Zero Trust) -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-6">
+                    <div class="border-b border-beschool-border pb-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-black bg-beschool-navy text-white px-2.5 py-0.5 rounded-md">المحور الرابع</span>
+                            <h3 class="text-lg sm:text-xl font-black text-beschool-navy mt-1">الدفاع في العمق مقابل نهج انعدام الثقة (Zero Trust)</h3>
+                        </div>
+                        <span class="text-xs font-bold text-beschool-muted">الشكل 2.2.2 من المنهج</span>
+                    </div>
+
+                    <!-- جدول طبقات الدفاع في العمق الأربع -->
+                    <div class="space-y-2">
+                        <h4 class="text-xs sm:text-sm font-black text-beschool-navy">طبقات الدفاع في العمق الأربع (Defense in Depth):</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                            <div class="p-3.5 rounded-xl bg-orange-50 border border-orange-200 space-y-1">
+                                <span class="text-[10px] font-black bg-orange-200 text-orange-900 px-2 py-0.5 rounded">الطبقة 1: مدخل الشبكة</span>
+                                <strong class="block text-beschool-navy font-black">جدار الحماية (Firewall)</strong>
+                                <p class="text-slate-600">منع الاتصالات غير المصرح بها وفق القواعد.</p>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-blue-50 border border-blue-200 space-y-1">
+                                <span class="text-[10px] font-black bg-blue-200 text-blue-900 px-2 py-0.5 rounded">الطبقة 2: مسار الاتصال</span>
+                                <strong class="block text-beschool-navy font-black">الشبكة الافتراضية (VPN)</strong>
+                                <p class="text-slate-600">تشفير قناة الاتصال لمنع التنصت.</p>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-purple-50 border border-purple-200 space-y-1">
+                                <span class="text-[10px] font-black bg-purple-200 text-purple-900 px-2 py-0.5 rounded">الطبقة 3: وضع الخوادم</span>
+                                <strong class="block text-beschool-navy font-black">المنطقة المعزولة (DMZ)</strong>
+                                <p class="text-slate-600">فصل الخوادم العامة عن الشبكة الداخلية.</p>
+                            </div>
+                            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1">
+                                <span class="text-[10px] font-black bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded">الطبقة 4: الأجهزة الطرفية</span>
+                                <strong class="block text-beschool-navy font-black">حماية الأجهزة (Endpoints)</strong>
+                                <p class="text-slate-600">برامج مكافحة الفيروسات وتحديثات النظام.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- مقارنة الأمان التقليدي بنهج انعدام الثقة (Zero Trust) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                            <strong class="font-black text-rose-950 flex items-center gap-1.5 text-sm">
+                                <i class="fa-solid fa-lock-open text-rose-600"></i>
+                                <span>الأمان التقليدي (حماية المحيط الأمني فقط):</span>
+                            </strong>
+                            <p class="text-slate-600 text-xs leading-relaxed">
+                                يفترض أن "الداخل آمن والخارج خطر". بمجرد تجاوز جدار الحماية والدخول إلى الشبكة الداخلية، يُمنح المستخدم ثقة تلقائية دون تحقق متكرر! ومع انتشار السحابة والعمل عن بعد طُمست الحدود وأصبح هذا النموذج غير كافٍ.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 space-y-2">
+                            <strong class="font-black text-emerald-950 flex items-center gap-1.5 text-sm">
+                                <i class="fa-solid fa-user-lock text-emerald-700"></i>
+                                <span>نهج انعدام الثقة (Zero Trust - الثقة الصفرية):</span>
+                            </strong>
+                            <p class="text-emerald-900 text-xs leading-relaxed">
+                                شعاره: <strong>«لا تثق تلقائياً بأحد، وتحقق دائماً من كل عملية وصول»</strong>. لا يمنح الثقة لمجرد وجود الجهاز داخل الشبكة؛ بل يفحص الهوية، والصلاحيات، ونوع الجهاز، والسياق الزمني والجغرافي عند كل طلب.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================================= -->
+            <!-- 2. تبويب المراجعة (REVISION TAB) -->
+            <!-- ========================================================================= -->
+            <div id="pane-revision" class="hidden space-y-6">
+                <!-- بطاقات المفاهيم 3D -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-5">
+                    <div class="border-b border-beschool-border pb-3 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-black bg-beschool-navy text-white px-2.5 py-0.5 rounded-md">أداة الاستذكار السريع</span>
+                            <h3 class="text-lg sm:text-xl font-black text-beschool-navy mt-1">بطاقات مفاهيم الدرس 2-2 (انقر لقلب البطاقة)</h3>
+                        </div>
+                        <span class="text-xs font-bold text-beschool-muted">6 بطاقات امتحانية</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Card 1 -->
+                        <div class="flashcard perspective-1000 h-44 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                            <div class="flashcard-inner relative w-full h-full transform-style-3d">
+                                <div class="backface-hidden absolute inset-0 bg-slate-50 rounded-2xl p-5 border border-beschool-border flex flex-col items-center justify-center text-center shadow-xs">
+                                    <span class="text-[10px] font-black bg-orange-100 text-beschool-orange px-2 py-0.5 rounded-full mb-2">المصطلح 1</span>
+                                    <h4 class="font-extrabold text-base text-beschool-navy">جدار الحماية<br><span class="text-xs font-mono text-beschool-muted">Firewall</span></h4>
+                                    <span class="text-[11px] text-beschool-muted mt-3"><i class="fa-solid fa-arrows-rotate ml-1"></i> انقر لرؤية التعريف</span>
+                                </div>
+                                <div class="backface-hidden rotate-y-180 absolute inset-0 bg-beschool-navy text-white rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+                                    <p class="text-xs leading-relaxed text-slate-200">
+                                        نظام أو برنامج يراقب حركة مرور الشبكة ويسمح بالاتصال أو يمنعه استناداً إلى قواعد أمنية محددة مسبقاً عند نقاط الدخول والخروج.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="flashcard perspective-1000 h-44 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                            <div class="flashcard-inner relative w-full h-full transform-style-3d">
+                                <div class="backface-hidden absolute inset-0 bg-slate-50 rounded-2xl p-5 border border-beschool-border flex flex-col items-center justify-center text-center shadow-xs">
+                                    <span class="text-[10px] font-black bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full mb-2">المصطلح 2</span>
+                                    <h4 class="font-extrabold text-base text-beschool-navy">الشبكة الافتراضية الخاصة<br><span class="text-xs font-mono text-beschool-muted">VPN</span></h4>
+                                    <span class="text-[11px] text-beschool-muted mt-3"><i class="fa-solid fa-arrows-rotate ml-1"></i> انقر لرؤية التعريف</span>
+                                </div>
+                                <div class="backface-hidden rotate-y-180 absolute inset-0 bg-blue-900 text-white rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+                                    <p class="text-xs leading-relaxed text-slate-200">
+                                        اتصال أو شبكة منطقية خاصة عبر شبكة عامة مثل الإنترنت، تستخدم التشفير وتقنيات النفق لنقل البيانات بأمان وتقليل مخاطر التنصت.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="flashcard perspective-1000 h-44 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                            <div class="flashcard-inner relative w-full h-full transform-style-3d">
+                                <div class="backface-hidden absolute inset-0 bg-slate-50 rounded-2xl p-5 border border-beschool-border flex flex-col items-center justify-center text-center shadow-xs">
+                                    <span class="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full mb-2">المصطلح 3</span>
+                                    <h4 class="font-extrabold text-base text-beschool-navy">المنطقة المعزولة<br><span class="text-xs font-mono text-beschool-muted">DMZ</span></h4>
+                                    <span class="text-[11px] text-beschool-muted mt-3"><i class="fa-solid fa-arrows-rotate ml-1"></i> انقر لرؤية التعريف</span>
+                                </div>
+                                <div class="backface-hidden rotate-y-180 absolute inset-0 bg-emerald-900 text-white rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+                                    <p class="text-xs leading-relaxed text-slate-200">
+                                        منطقة شبكية منفصلة توضع فيها الخوادم المواجهة للجمهور (كالويب والبريد) لحماية الشبكة الداخلية من وصول الهجوم إليها حال اختراق الخادم.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="flashcard perspective-1000 h-44 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                            <div class="flashcard-inner relative w-full h-full transform-style-3d">
+                                <div class="backface-hidden absolute inset-0 bg-slate-50 rounded-2xl p-5 border border-beschool-border flex flex-col items-center justify-center text-center shadow-xs">
+                                    <span class="text-[10px] font-black bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full mb-2">المصطلح 4</span>
+                                    <h4 class="font-extrabold text-base text-beschool-navy">الدفاع في العمق<br><span class="text-xs font-mono text-beschool-muted">Defense in Depth</span></h4>
+                                    <span class="text-[11px] text-beschool-muted mt-3"><i class="fa-solid fa-arrows-rotate ml-1"></i> انقر لرؤية التعريف</span>
+                                </div>
+                                <div class="backface-hidden rotate-y-180 absolute inset-0 bg-purple-900 text-white rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+                                    <p class="text-xs leading-relaxed text-slate-200">
+                                        استخدام طبقات متعددة من الضوابط الأمنية المتتالية، بحيث إذا فشلت إحدى الطبقات تساعد الطبقات الأخرى على تقليل الخطر وحصر أثر الاختراق.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 5 -->
+                        <div class="flashcard perspective-1000 h-44 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                            <div class="flashcard-inner relative w-full h-full transform-style-3d">
+                                <div class="backface-hidden absolute inset-0 bg-slate-50 rounded-2xl p-5 border border-beschool-border flex flex-col items-center justify-center text-center shadow-xs">
+                                    <span class="text-[10px] font-black bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full mb-2">المصطلح 5</span>
+                                    <h4 class="font-extrabold text-base text-beschool-navy">نهج انعدام الثقة<br><span class="text-xs font-mono text-beschool-muted">Zero Trust</span></h4>
+                                    <span class="text-[11px] text-beschool-muted mt-3"><i class="fa-solid fa-arrows-rotate ml-1"></i> انقر لرؤية التعريف</span>
+                                </div>
+                                <div class="backface-hidden rotate-y-180 absolute inset-0 bg-rose-900 text-white rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+                                    <p class="text-xs leading-relaxed text-slate-200">
+                                        نهج أمني لا يمنح الثقة التلقائية لأي مستخدم أو جهاز لمجرد وجوده داخل الشبكة، بل يفحص الهوية والصلاحيات والسياق عند كل طلب وصول.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 6 -->
+                        <div class="flashcard perspective-1000 h-44 cursor-pointer" onclick="this.classList.toggle('flipped')">
+                            <div class="flashcard-inner relative w-full h-full transform-style-3d">
+                                <div class="backface-hidden absolute inset-0 bg-slate-50 rounded-2xl p-5 border border-beschool-border flex flex-col items-center justify-center text-center shadow-xs">
+                                    <span class="text-[10px] font-black bg-orange-100 text-beschool-orange px-2 py-0.5 rounded-full mb-2">المصطلح 6</span>
+                                    <h4 class="font-extrabold text-base text-beschool-navy">المحيط الأمني<br><span class="text-xs font-mono text-beschool-muted">Security Perimeter</span></h4>
+                                    <span class="text-[11px] text-beschool-muted mt-3"><i class="fa-solid fa-arrows-rotate ml-1"></i> انقر لرؤية التعريف</span>
+                                </div>
+                                <div class="backface-hidden rotate-y-180 absolute inset-0 bg-beschool-orange text-white rounded-2xl p-5 flex flex-col items-center justify-center text-center">
+                                    <p class="text-xs leading-relaxed text-white">
+                                        الحدود التقليدية التي افترضت أن داخل شبكة المؤسسة آمن وخارجها خطر، والتي طمستها الخدمات السحابية ونماذج العمل عن بعد.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- خلاصة ليلة الامتحان -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-beschool-border shadow-xs space-y-6">
+                    <div class="border-b border-beschool-border pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <span class="text-[11px] font-black bg-orange-100 text-beschool-orange px-2.5 py-0.5 rounded-md">خلاصة ليلة الامتحان</span>
+                            <h3 class="text-lg sm:text-xl font-black text-beschool-navy mt-1">تذكر دائماً (أهم مفاتيح الدرس 2-2)</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="copySummaryTextL22()" class="px-3.5 py-2 rounded-xl bg-beschool-navy hover:bg-beschool-navyLight text-white text-xs font-bold transition flex items-center gap-1.5">
+                                <i class="fa-regular fa-copy"></i>
+                                <span id="copyBtnLabelL22">نسخ الملخص</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-beschool-border space-y-2">
+                            <div class="flex items-center gap-2 text-beschool-orange font-black">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                <span>1. معادلة الأمان القوي:</span>
+                            </div>
+                            <p class="text-beschool-slate leading-relaxed">
+                                أمان الشبكات القوي = الدفاع في العمق (طبقات حماية متتالية) + نهج انعدام الثقة (التحقق المستمر من كل عملية وصول)، بحيث يصبح من المستبعد أن يؤدي خرق حاجز واحد إلى سقوط المنظومة كاملة.
+                            </p>
+                        </div>
+                        <div class="p-4 rounded-xl bg-slate-50 border border-beschool-border space-y-2">
+                            <div class="flex items-center gap-2 text-beschool-orange font-black">
+                                <i class="fa-solid fa-sitemap"></i>
+                                <span>2. دور الـ DMZ والـ VPN:</span>
+                            </div>
+                            <p class="text-beschool-slate leading-relaxed">
+                                الـ DMZ تعزل خوادم الويب والبريد عن قواعد البيانات الداخلية، بينما الـ VPN تنشئ نفقاً مشفراً للعمل عن بعد وربط الفروع بأمان عبر الإنترنت وتقليل مخاطر التنصت.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================================= -->
+            <!-- 3. تبويب حل تمارين الكتاب (BOOK SOLUTIONS TAB) -->
+            <!-- ========================================================================= -->
+            <div id="pane-book-solutions" class="space-y-6 hidden">
+                <div class="bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl p-6 sm:p-7 shadow-xs space-y-2 text-right">
+                    <div class="inline-flex items-center gap-2 bg-white/20 px-3 py-1 rounded-lg text-xs font-black">
+                        <i class="fa-solid fa-award"></i>
+                        <span>حلول نموذجية وشاملة لكافة تدريبات الدرس 2-2</span>
+                    </div>
+                    <h2 class="text-xl sm:text-2xl font-black">حل جميع تدريبات وأسئلة كتاب الوزارة المعتمدة</h2>
+                    <p class="text-xs sm:text-sm text-orange-50 font-medium leading-relaxed">
+                        إجابات مفسرة ومدعومة بالتعليلات العلمية: توقف وفكر، المثال المحلول، سؤال نمط الامتحان (6 درجات)، تدرب 1 و 2، ورشة فكر كمهندس، طبق ما تعلمته، وتمارين نهاية الدرس.
+                    </p>
+                </div>
+
+                <!-- توقف وفكر -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-4">
+                    <span class="text-xs font-black bg-blue-100 text-blue-800 px-3 py-1 rounded-lg">حل أسئلة «توقف وفكر»</span>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-2 text-slate-700">
+                        <p class="font-bold text-beschool-navy">السؤال: لماذا يكون وضع خادم ويب عام في المنطقة المعزولة (DMZ) أكثر أماناً من وضعه داخل الشبكة الداخلية مباشرة؟</p>
+                        <p class="text-emerald-900 bg-emerald-50 p-2.5 rounded-lg border border-emerald-200 font-bold">
+                            الإجابة: لأن خادم الويب العام معرض لاتصالات مستمرة من الإنترنت ومستهدف بالهجمات؛ فإذا وُضع في الـ DMZ وتعرّض للاختراق، فإن المهاجم يظل محصوراً داخل المنطقة المعزولة ويمنعه جدار الحماية الداخلي من الوصول إلى قواعد البيانات السرية وحواسيب الموظفين داخل الشبكة الداخلية.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- المثال المحلول ص 42 -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-4">
+                    <span class="text-xs font-black bg-purple-100 text-purple-800 px-3 py-1 rounded-lg">حل «المثال المحلول» (كتاب الوزارة ص 42)</span>
+                    <div class="space-y-3 text-xs sm:text-sm">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5">
+                            <strong class="text-beschool-navy block font-black">1. ضع علامة (✓) أو (✗) مع التفسير:</strong>
+                            <p>أ) يسمح جدار الحماية بالاتصال أو يمنعه استناداً إلى قواعد محددة مسبقاً: <strong class="text-emerald-700">(✓) صواب</strong>.</p>
+                            <p>ب) يمكن أن يقلل استخدام الشبكة الافتراضية الخاصة من مخاطر التنصت حتى على شبكة Wi-Fi عامة: <strong class="text-emerald-700">(✓) صواب</strong>.</p>
+                            <p>ج) المنطقة المعزولة نظام يعرض جميع الخوادم للخارج: <strong class="text-rose-700">(✗) خطأ</strong> (التصحيح: توضع فيها الخوادم المعرضة للجمهور فقط كخادم الويب، بينما خوادم البيانات السرية تظل محمية داخل الشبكة الداخلية).</p>
+                            <p>د) الدفاع في العمق هو مفهوم تكديس عدة إجراءات أمنية في طبقات متعددة: <strong class="text-emerald-700">(✓) صواب</strong>.</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                            <strong class="text-beschool-navy block font-black">2. المطابقة:</strong>
+                            <p>• خط خاص افتراضي مشفر عبر الإنترنت: <strong>الشبكة الافتراضية الخاصة VPN (ب)</strong>.</p>
+                            <p>• منطقة توضع فيها الخوادم المعرضة للخارج منفصلة عن الشبكة الداخلية: <strong>المنطقة المعزولة DMZ (جـ)</strong>.</p>
+                            <p>• نظام يسمح بالاتصال أو يمنعه استناداً إلى قواعد محددة: <strong>جدار الحماية (أ)</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- سؤال نمط الامتحان المقالي 6 درجات -->
+                <div class="bg-white rounded-2xl p-6 border-2 border-beschool-orange shadow-xs space-y-4">
+                    <div class="flex items-center justify-between border-b border-beschool-border pb-2">
+                        <span class="text-xs font-black bg-beschool-orange text-white px-3 py-1 rounded-lg">سؤال نمط الامتحان المقالي [6 درجات]</span>
+                        <span class="text-xs font-bold text-beschool-navy">سلم توزيع الدرجات المعتمد</span>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-orange-50/70 border border-orange-200 font-bold text-beschool-navy text-xs sm:text-sm">
+                        نص السؤال: «اشرح لماذا يحمي تكديس عدة إجراءات أمنية في طبقات (الدفاع في العمق) المؤسسة بشكل أفضل من الاعتماد على جدار الحماية وحده؟ [6 درجات]»
+                    </div>
+                    <div class="space-y-2 text-xs sm:text-sm">
+                        <div class="p-2.5 rounded-lg bg-white border border-slate-200">
+                            <strong>1. قصور الإجراء الأمني الواحد [درجتان]:</strong> الاعتماد على جدار الحماية الخارجي وحده يمثل نقطة فشل وحيدة (Single Point of Failure)؛ فإذا نجح المهاجم في تجاوزه تصبح كافة أجهزة وخوادم وقواعد بيانات المؤسسة مكشوفة بالكامل.
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-white border border-slate-200">
+                            <strong>2. آلية عمل الدفاع في العمق وتكديس الطبقات [درجتان]:</strong> وضع حواجز متتالية (جدار حماية عند المدخل + تشفير VPN لمسار الاتصال + عزل DMZ للخوادم العامة + حماية أجهزة المستخدمين الطرفية)؛ بحيث إذا سقطت طبقة تتصدى الطبقة التالية للمهاجم.
+                        </div>
+                        <div class="p-2.5 rounded-lg bg-white border border-slate-200">
+                            <strong>3. الأثر الأمني النهائي [درجتان]:</strong> تقليل احتمال نجاح الاختراق الكلي، وحصر أضرار أي تسلل في أضيق نطاق ممكن، ومنح مسؤولي الأمن وقتاً لرصد الهجوم والاستجابة له.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تدرب 1 و 2 ص 43 -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-4">
+                    <span class="text-xs font-black bg-emerald-100 text-emerald-800 px-3 py-1 rounded-lg">حل أسئلة «تدرب 1 و 2» (ص 43)</span>
+                    <div class="space-y-3 text-xs sm:text-sm">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                            <p>1. نظام أو برنامج يراقب حركة مرور الشبكة ويسمح بها أو يمنعها وفق قواعد أمنية: <strong>جدار الحماية (Firewall)</strong>.</p>
+                            <p>2. اتصال منطقي خاص يحمي البيانات عبر شبكة عامة: <strong>الشبكة الافتراضية الخاصة (VPN)</strong>.</p>
+                            <p>3. اختصار المنطقة التي توضع فيها الخوادم المعرضة للخارج منفصلة عن الشبكة الداخلية: <strong>DMZ</strong>.</p>
+                            <p>4. المصطلح الذي يُطلق على مفهوم تكديس عدة إجراءات أمنية: <strong>الدفاع في العمق (Defense in Depth)</strong>.</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                            <p>• الخيار الذي لا يمثل استخداماً مناسباً لـ VPN: <strong>(جـ) الحذف التلقائي للملفات المصابة بالفيروسات</strong> (لأن ذلك وظيفة برامج مكافحة الفيروسات Antivirus وليس VPN).</p>
+                            <p>• تصنيف الطبقات: (أ: مدخل الشبكة - جدار الحماية) • (ب: مسار الاتصال - VPN) • (جـ: وضع الخوادم - DMZ) • (د: الأجهزة الطرفية - مكافحة الفيروسات).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ورشة فكر كمهندس وطبق ما تعلمته -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-4">
+                    <span class="text-xs font-black bg-amber-100 text-amber-900 px-3 py-1 rounded-lg">حل ورشة «فكر كمهندس» وسؤال «طبق ما تعلمته» (ص 44)</span>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-2 text-slate-700">
+                        <p class="font-bold text-beschool-navy">قرار فكر كمهندس:</p>
+                        <p>نوصي بتصميم متعدد الطبقات: وضع موقع الويب العام في منطقة DMZ، وإلزام الموظفين عن بعد بالاتصال عبر VPN مشفر، وحماية قواعد بيانات العملاء في الشبكة الداخلية بجدار حماية داخلي وتطبيق نهج انعدام الثقة (Zero Trust)؛ لضمان عدم تعرض بيانات العملاء للخطر حتى لو اخترق المهاجم خادم الويب العام.</p>
+                        <p class="font-bold text-beschool-navy pt-1">حل سؤال طبق ما تعلمته (مستشفى ينقل سجلاته للسحابة):</p>
+                        <p><strong>الإجراءان المقترحان:</strong> (1) إلزام الأطباء بالاتصال عبر شبكة افتراضية خاصة VPN ومصادقة متعددة العوامل MFA، (2) تطبيق نهج انعدام الثقة بفحص صلاحيات كل طبيب وسياق وصوله عند كل استعلام. <strong>الخطر الذي يظل قائماً:</strong> تعرض جهاز الطبيب الشخصي في المنزل للاختراق وسرقة بيانات الدخول أو إصابته ببرمجية تجسس خبيثة.</p>
+                    </div>
+                </div>
+
+                <!-- تمارين ص 44 -->
+                <div class="bg-white rounded-2xl p-6 border border-beschool-border shadow-xs space-y-4">
+                    <span class="text-xs font-black bg-beschool-navy text-white px-3 py-1 rounded-lg">حل التمارين الختامية (ص 44)</span>
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-2 text-slate-700">
+                        <p><strong>إكمال الفراغات:</strong> يراقب (أ: جدار الحماية)، وتوضع الخوادم العامة في (ب: المنطقة المعزولة DMZ)، ويُحمى الاتصال البعيد عبر (جـ: الشبكة الافتراضية الخاصة VPN)، ويسمى تكديس الإجراءات (د: الدفاع في العمق).</p>
+                        <p><strong>السؤال 3 (1):</strong> السبب الأنسب لاستخدام DMZ هو <strong>(جـ) لمنع الضرر عن الشبكة الداخلية حتى لو تعرض خادم مواجه للجمهور للهجوم</strong>.</p>
+                        <p><strong>السؤال 3 (2):</strong> الخيار الأدق لوصف نهج انعدام الثقة هو <strong>(جـ) لا تُمنح الثقة تلقائياً بناءً على موقع المستخدم أو الجهاز، ويتحقق من كل طلب وصول وفق الهوية والصلاحيات والسياق</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================================= -->
+            <!-- 4. تبويب الاختبار (QUIZ TAB) - 50 سؤالاً تفاعلياً ومحكماً -->
+            <!-- ========================================================================= -->
+            <div id="pane-questions" class="space-y-6 hidden">
+                <div class="max-w-3xl mx-auto bg-white rounded-2xl p-6 sm:p-8 border border-beschool-border shadow-xs space-y-6">
+                    <div class="border-b border-beschool-border pb-4 flex items-center justify-between">
+                        <div>
+                            <span class="text-[11px] font-black bg-orange-100 text-beschool-orange px-2.5 py-0.5 rounded-md">اختبار تفاعلي مصحح ذاتياً</span>
+                            <h3 class="text-lg sm:text-xl font-black text-beschool-navy mt-1">بنك أسئلة الدرس 2-2 (50 سؤالاً دقيقاً)</h3>
+                        </div>
+                        <div class="text-left font-mono">
+                            <span class="text-xs text-beschool-muted block font-bold">السؤال</span>
+                            <span class="text-base font-black text-beschool-orange">
+                                <span id="activeQIndex">1</span> / <span id="totalQCount">50</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- شريط الانتقال السريع 50 زراً -->
+                    <div class="bg-slate-50 p-3 rounded-xl border border-beschool-border">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[11px] font-black text-beschool-slate">
+                                <i class="fa-solid fa-list-check ml-1 text-beschool-orange"></i> الانتقال السريع للأسئلة:
+                            </span>
+                            <span class="text-[10px] text-beschool-muted font-bold" id="quizAnsweredBadge">تمت الإجابة: 0 / 50</span>
+                        </div>
+                        <div id="quickNavGrid" class="grid grid-cols-10 gap-1.5 text-center">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- صندوق عرض السؤال النشط -->
+                    <div id="quizContainer" class="space-y-4">
+                        <!-- Injected by JS -->
+                    </div>
+
+                    <!-- أزرار التنقل -->
+                    <div class="pt-4 border-t border-beschool-border flex items-center justify-between gap-2">
+                        <button id="btnPrevQ" onclick="prevQuestion()" class="px-4 py-2 rounded-xl text-xs font-bold text-beschool-slate hover:bg-slate-100 transition hidden">
+                            <i class="fa-solid fa-arrow-right ml-1"></i> السابق
+                        </button>
+                        <div class="flex-1"></div>
+                        <button id="btnNextQ" onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl bg-beschool-orange hover:bg-beschool-orangeDark text-white text-xs sm:text-sm font-black transition flex items-center gap-1.5 shadow-xs">
+                            <span>السؤال التالي</span>
+                            <i class="fa-solid fa-arrow-left mr-1"></i>
+                        </button>
+                    </div>
+
+                    <!-- شاشة النتيجة المتقدمة ولوحة الشرف -->
+                    <div id="quizScoreboard" class="hidden text-center py-6 space-y-5 bg-slate-50 rounded-2xl border border-beschool-border p-6">
+                        <div id="scoreIconContainer" class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto shadow-sm">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        
+                        <h4 class="text-xl sm:text-2xl font-black text-beschool-navy">اكتمل التقييم بنجاح!</h4>
+                        <p class="text-sm font-black text-beschool-orange">
+                            الطالب: <span id="quizStudentNameDisplay">طالب متميز</span>
+                        </p>
+                        <p id="quizScoreText" class="text-sm font-bold text-beschool-slate">
+                            درجتك المستحقة: 50 من 50
+                        </p>
+
+                        <!-- بطاقة النتيجة والرسالة التحفيزية الموجهة والمناسبة لعمر الطلاب -->
+                        <div id="motivationCard" class="max-w-xl mx-auto p-4 sm:p-5 rounded-2xl border text-right space-y-2 shadow-xs transition">
+                            <!-- Dynamic Content by JS -->
+                        </div>
+
+                        <div class="max-w-xl mx-auto bg-white p-3 rounded-xl border border-beschool-border text-xs text-beschool-slate space-y-1">
+                            <p id="quizStatsDetails">صحيحة: 50 | غير صحيحة: 0</p>
+                        </div>
+
+                        <div class="flex flex-wrap justify-center gap-3 pt-2">
+                            <button onclick="resetQuizEngine()" class="px-5 py-2.5 rounded-xl bg-beschool-orange hover:bg-beschool-orangeDark text-white text-xs sm:text-sm font-bold transition flex items-center gap-2 shadow-xs">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                <span>إعادة الاختبار بالكامل</span>
+                            </button>
+                            <button onclick="switchNavTab('study')" class="px-5 py-2.5 rounded-xl bg-white border border-beschool-border text-beschool-navy text-xs sm:text-sm font-bold hover:bg-slate-100 transition flex items-center gap-2">
+                                <i class="fa-solid fa-book-open"></i>
+                                <span>مراجعة الشرح</span>
+                            </button>
+                        </div>
+
+                        <!-- قائمة المراجعة التفصيلية لجميع الـ 50 سؤالاً -->
+                        <div class="pt-6 border-t border-beschool-border text-right space-y-4">
+                            <h5 class="text-sm sm:text-base font-black text-beschool-navy flex items-center gap-2">
+                                <i class="fa-solid fa-clipboard-check text-beschool-orange"></i>
+                                <span>مراجعة تفصيلية لجميع الأسئلة الـ 50:</span>
+                            </h5>
+                            <div id="quizReviewList" class="space-y-3">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="bg-white border-t border-beschool-border py-8 mt-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-right">
+                <div class="flex flex-col items-center md:items-start leading-tight select-none">
+                    <div dir="ltr" class="flex items-baseline font-black text-2xl sm:text-3xl tracking-tight leading-none">
+                        <span class="text-beschool-orange font-black">be</span><span class="text-beschool-orange font-black">;</span><span class="text-beschool-navy font-black">school</span>
+                    </div>
+                    <span class="text-xs sm:text-sm font-black text-beschool-navy mt-1">مدرسة البرمجة</span>
+                    <span class="text-[11px] text-beschool-muted mt-1">الدرس 2-2: تصميم أمن الشبكات • الصف الثاني الثانوي</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- كود الجافاسكريبت المدمج والكامل -->
+    <script>
+        let currentStudentName = "";
+
+        function goToNameEntryScreen() {
+            document.getElementById('screen-landing').classList.add('hidden');
+            const nameScreen = document.getElementById('screen-name-entry');
+            nameScreen.classList.remove('hidden');
+            const input = document.getElementById('studentNameInput');
+            if (input) input.focus();
+        }
+
+        function goToLandingScreen() {
+            document.getElementById('screen-name-entry').classList.add('hidden');
+            document.getElementById('screen-landing').classList.remove('hidden');
+        }
+
+        function startPlatformWithStudentName() {
+            const input = document.getElementById('studentNameInput');
+            const errAlert = document.getElementById('nameErrorAlert');
+            const val = input ? input.value.trim() : "";
+
+            if (!val) {
+                if (errAlert) errAlert.classList.remove('hidden');
+                if (input) input.focus();
+                return;
+            }
+
+            if (errAlert) errAlert.classList.add('hidden');
+            currentStudentName = val;
+
+            const headerNameElem = document.getElementById('headerStudentName');
+            if (headerNameElem) headerNameElem.innerText = currentStudentName;
+
+            const scoreNameElem = document.getElementById('quizStudentNameDisplay');
+            if (scoreNameElem) scoreNameElem.innerText = currentStudentName;
+
+            document.getElementById('screen-name-entry').classList.add('hidden');
+            document.getElementById('screen-main-platform').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function exitToLanding() {
+            document.getElementById('screen-main-platform').classList.add('hidden');
+            document.getElementById('screen-name-entry').classList.add('hidden');
+            document.getElementById('screen-landing').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchNavTab(targetTab) {
+            const tabs = ['study', 'revision', 'book-solutions', 'questions'];
+            tabs.forEach(t => {
+                const pane = document.getElementById('pane-' + t);
+                const navBtn = document.getElementById('tabNav-' + t);
+                if (pane) pane.classList.add('hidden');
+                if (navBtn) navBtn.classList.remove('active');
+            });
+
+            const activePane = document.getElementById('pane-' + targetTab);
+            const activeNavBtn = document.getElementById('tabNav-' + targetTab);
+            if (activePane) activePane.classList.remove('hidden');
+            if (activeNavBtn) activeNavBtn.classList.add('active');
+
+            window.scrollTo({ top: 120, behavior: 'smooth' });
+        }
+
+        // محاكي فحص الحزم بجدار الحماية
+        let fwCount = 0;
+        function testFwPacket(type) {
+            fwCount++;
+            document.getElementById('fwTestCounter').innerText = `الحزم المفحوصة: ${fwCount}`;
+            const icon = document.getElementById('fwDecisionIcon');
+            const title = document.getElementById('fwDecisionTitle');
+            const desc = document.getElementById('fwDecisionDesc');
+            const box = document.getElementById('fwDecisionBox');
+
+            if (type === 'web') {
+                box.className = "p-4 rounded-xl bg-emerald-50 border border-emerald-300 flex items-start gap-3 transition-all";
+                icon.className = "w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg font-bold shrink-0";
+                icon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                title.innerText = "السماح بالمرور (ALLOW): حركة مرور ويب شرعية";
+                title.className = "text-xs sm:text-sm font-black text-emerald-950";
+                desc.innerText = "الحزمة موجهة للمنفذ 443 (HTTPS) على خادم الويب في الـ DMZ. تطابق القواعد المعتمدة ويُسمح بها فوراً.";
+            } else if (type === 'ssh') {
+                box.className = "p-4 rounded-xl bg-rose-50 border border-rose-300 flex items-start gap-3 transition-all";
+                icon.className = "w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-lg font-bold shrink-0";
+                icon.innerHTML = '<i class="fa-solid fa-ban"></i>';
+                title.innerText = "حظر وإسقاط الحزمة (DROP): محاولة وصول غير مصرح بها";
+                title.className = "text-xs sm:text-sm font-black text-rose-950";
+                desc.innerText = "الحزمة قادمة من عنوان IP خارجي عام وتحاول النفاذ للمنفذ 22 (إدارة الخادم). تسقط الحزمة ويُسجل التنبيه في سجل الأحداث.";
+            } else {
+                box.className = "p-4 rounded-xl bg-purple-50 border border-purple-300 flex items-start gap-3 transition-all";
+                icon.className = "w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-lg font-bold shrink-0";
+                icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+                title.innerText = "حظر صارم وإسقاط (DROP): انتهاك سياسة عزل البيانات";
+                title.className = "text-xs sm:text-sm font-black text-purple-950";
+                desc.innerText = "محاولة اتصال مباشر من الإنترنت بالمنفذ 1433 لقاعدة البيانات السرية. وفقاً لقواعد الأمان يُحظر أي اتصال خارجي مباشر وتُسقط الحزمة فوراً.";
+            }
+        }
+
+        function copySummaryTextL22() {
+            const summaryString = `
+ملخص الدرس 2-2: تصميم أمن الشبكات
+منصة be;school مدرسة البرمجة
+
+1. جدار الحماية (Firewall):
+- نظام يراقب حركة مرور الشبكة ويسمح بالاتصال أو يمنعه استناداً إلى قواعد أمنية مسبقة.
+- يوضع عند حدود الشبكة الخارجية أو بين أجزائها الداخلية أو على جهاز مضيف.
+
+2. الشبكة الافتراضية الخاصة (VPN):
+- اتصال منطقي خاص عبر شبكة عامة (الإنترنت) يستخدم التشفير وتقنيات النفق لحماية البيانات.
+- تستخدم في تمكين العمل عن بعد وربط فروع المؤسسة وتقليل مخاطر التنصت على شبكات Wi-Fi العامة.
+
+3. المنطقة المعزولة (DMZ):
+- منطقة شبكية منفصلة توضع فيها الخوادم المعرضة للجمهور (كالويب والبريد).
+- الهدف: حماية الشبكة الداخلية وقواعد البيانات السرية إذا تعرض خادم عام للاختراق.
+
+4. الدفاع في العمق (Defense in Depth):
+- تكديس عدة طبقات أمنية متتالية (مدخل الشبكة، مسار الاتصال، وضع الخوادم، الأجهزة الطرفية).
+- إذا فشلت طبقة واحدة تساعد الطبقات الأخرى على تقليل الخطر وحصر أثر الاختراق.
+
+5. نهج انعدام الثقة (Zero Trust):
+- لا يُمنح أي مستخدم أو جهاز الثقة تلقائياً لمجرد وجوده داخل الشبكة.
+- يتم التحقق المستمر من الهوية، الصلاحيات، وسياق الوصول عند كل طلب.
+            `.trim();
+
+            const temp = document.createElement('textarea');
+            temp.value = summaryString;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            const label = document.getElementById('copyBtnLabelL22');
+            label.innerText = "تم النسخ بنجاح!";
+            setTimeout(() => { label.innerText = "نسخ الملخص"; }, 2000);
+        }
+
+        // =========================================================================
+        // بنك الـ 50 سؤالاً الاختياري المحكم وغير المباشر (توزيع عشوائي متوازن للخيارات)
+        // =========================================================================
+        const quizBank = [
+            // 1 (الإجابة: جـ)
+            {
+                type: "مفهوم أساسي",
+                q: "ما هو التعريف الدقيق لجدار الحماية (Firewall) في شبكات المؤسسات؟",
+                choices: [
+                    "بروتوكول تشفير ينشئ نفقاً منطقياً خاصاً لنقل البيانات عبر الشبكات العامة",
+                    "منطقة شبكية فرعية توضع فيها خوادم الويب العامة لعزلها عن قواعد البيانات",
+                    "نظام يفحص حركة مرور الشبكة ويسمح بها أو يمنعها وفقاً لقواعد أمنية محددة مسبقاً",
+                    "سياسة أمنية تفرض التحقق المستمر من هوية وصلاحيات المستخدم عند كل طلب وصول"
+                ],
+                correctIndex: 2,
+                hint: "يركز جدار الحماية على مراقبة وتصفية الحزم عند نقاط الدخول والخروج وفق جدول القواعد."
+            },
+            // 2 (الإجابة: أ)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: لماذا تحذر معايير أمن الشبكات الحديثة من الاكتفاء بحماية 'المحيط الأمني' فقط؟",
+                choices: [
+                    "لأن انتشار الخدمات السحابية والعمل عن بعد طمس الحدود الواضحة بين داخل الشبكة وخارجها",
+                    "لأن جدران الحماية الخارجية أصبحت غير قادرة على فحص حزم بروتوكول TCP/IP",
+                    "لأن قنوات الـ VPN تقوم بتعطيل فحص جدران الحماية الخارجية تلقائياً أثناء النقل",
+                    "لأن المنطقة المعزولة (DMZ) تلغي الحاجة كلياً لوجود أي بوابات أمنية خارجية"
+                ],
+                correctIndex: 0,
+                hint: "النموذج التقليدي يفترض أن الداخل آمن، ولكن العمل عن بعد جعل المستخدمين ومواردهم في كل مكان."
+            },
+            // 3 (الإجابة: ب)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: إذا تقدمت إدارة فرع جديد بطلب لربط أجهزتها بالمركز الرئيسي للشركة بأقل تكلفة بنية تحتية وأعلى أمان ممكن، فما التوصية الهندسية؟",
+                choices: [
+                    "مد كابل شبكة فيزيائي مخصص ومباشر بين المحافظتين دون استخدام أي تشفير",
+                    "إنشاء شبكة افتراضية خاصة (VPN) عبر الإنترنت العام تستخدم تقنيات النفق والتشفير",
+                    "وضع كافة خوادم الفرع الجديد داخل المنطقة المعزولة (DMZ) الخاصة بالمركز الرئيسي",
+                    "الاعتماد على جدار حماية فيزيائي واحد عند الفرع دون تشفير حركة البيانات المارة"
+                ],
+                correctIndex: 1,
+                hint: "الـ VPN توفر مساراً منطقياً مشفراً وآمناً عبر شبكة الإنترنت العامة بتكلفة منخفضة."
+            },
+            // 4 (الإجابة: د)
+            {
+                type: "قل رأيك وبرر",
+                q: "قل رأيك: لماذا يُعد وضع خادم قواعد البيانات السرية داخل منطقة الـ DMZ خطأً هندسياً فادحاً؟",
+                choices: [
+                    "لأن قواعد جدار الحماية تمنع خوادم الـ DMZ من استقبال أو معالجة أي استعلامات برمجية",
+                    "لأن خوادم قواعد البيانات تتطلب حتماً الاتصال بشبكة Wi-Fi عامة لتعمل بكفاءة",
+                    "لأن المنطقة المعزولة تلغي تشفير البيانات أثناء انتقالها بين الحواسيب",
+                    "لأن الـ DMZ صُممت لاستضافة الخوادم المعرضة للإنترنت، فوضع قاعدة البيانات هناك يعرضها للاستهداف المباشر"
+                ],
+                correctIndex: 3,
+                hint: "الـ DMZ منطقة شبه عامة مخصصة لخوادم الويب والبريد، بينما قواعد البيانات توضع في أعمق طبقة آمنة."
+            },
+            // 5 (الإجابة: ب)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: المفهوم الأمني الذي ينص على تكديس عدة إجراءات أمنية في طبقات متتالية يسمى مفهوم ........",
+                choices: [
+                    "حماية المحيط الأمني الفردي",
+                    "الدفاع في العمق (Defense in Depth)",
+                    "التشفير المتماثل المتزامن",
+                    "المصادقة ثنائية الخطوات"
+                ],
+                correctIndex: 1,
+                hint: "طبقات متتالية بحيث إذا فشل إجراء أمني تصدت الطبقة التالية للهجوم."
+            },
+            // 6 (الإجابة: أ)
+            {
+                type: "مفهوم أساسي",
+                q: "ما المبدأ الجوهري الذي يقوم عليه 'نهج انعدام الثقة' (Zero Trust)؟",
+                choices: [
+                    "عدم منح الثقة التلقائية لأي مستخدم أو جهاز، والتحقق المستمر من الهوية والصلاحيات والسياق",
+                    "حظر كافة اتصالات العاملين عن بعد ومنع استخدام أي خدمات سحابية داخل المؤسسة",
+                    "الاعتماد الكامل على قوة جدار الحماية المحيطي وافتراض أمان كل ما هو داخل الشبكة",
+                    "تشفير البيانات في خوادم الويب وفك تشفيرها تلقائياً داخل المنطقة المعزولة"
+                ],
+                correctIndex: 0,
+                hint: "شعار Zero Trust هو: تحقق دائماً ولا تفترض الثقة مطلقاً حتى داخل الشبكة الداخلية."
+            },
+            // 7 (الإجابة: د)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: لماذا يوفر استخدام الـ VPN حماية إضافية بالغة الأهمية عند الاتصال بشبكة Wi-Fi عامة بمقهى؟",
+                choices: [
+                    "لأنه يقوم بحذف البرمجيات الخبيثة فوراً من القرص الصلب للجهاز المحمول",
+                    "لأنه يحول الشبكة العامة تلقائياً إلى خادم ويب معزول داخل الـ DMZ",
+                    "لأنه يمنع جهاز المستخدم من إرسال أي طلبات اتصال بالإنترنت",
+                    "لأنه يشفر حركة البيانات المارة عبر النفق، مما يمنع المتنصتين على الشبكة المفتوحة من قراءة المحتوى"
+                ],
+                correctIndex: 3,
+                hint: "التشفير يمنع هجمات التنصت (Sniffing) والاعتراض الشائعة في الشبكات اللاسلكية المفتوحة."
+            },
+            // 8 (الإجابة: جـ)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: إذا اخترق متسلل خادم الويب العام داخل الـ DMZ، ما الذي يمنعه من الوصول المباشر لقاعدة البيانات بالشبكة الداخلية؟",
+                choices: [
+                    "جدار الحماية الخارجي الفاصل بين شبكة الإنترنت العامة والـ DMZ",
+                    "بروتوكول الـ VPN الذي يقطع الاتصال تلقائياً بمجرد حدوث اختراق للويب",
+                    "جدار الحماية الداخلي الفاصل بين الـ DMZ والشبكة الداخلية وسياسات الوصول الصارمة",
+                    "وجود نظام التشغيل على خادم الويب بدون أي برمجيات مضادة للفيروسات"
+                ],
+                correctIndex: 2,
+                hint: "الشبكة المعمارية السليمة تضع جدار حماية داخلي إضافي يعزل الـ DMZ عن الشبكة الداخلية."
+            },
+            // 9 (الإجابة: ب)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: وفقاً لنموذج الدفاع في العمق، فإن تثبيت مكافحة الفيروسات وتحديث نظام التشغيل ينتمي لطبقة ........",
+                choices: [
+                    "مدخل الشبكة الخارجي",
+                    "الأجهزة الطرفية (Endpoints)",
+                    "مسار الاتصال المشفر",
+                    "وضع الخوادم العامة"
+                ],
+                correctIndex: 1,
+                hint: "تمثل الطبقة الرابعة التي تركز على تأمين جهاز المستخدم نفسه."
+            },
+            // 10 (الإجابة: أ)
+            {
+                type: "قل رأيك وبرر",
+                q: "قل رأيك: إذا تم اختراق أحد الحسابات الداخلية المصرح لها بالشبكة، كيف يحد نهج انعدام الثقة من الأضرار؟",
+                choices: [
+                    "بفحص سياق وصلاحيات كل طلب وصول، مما يمنع الحساب المخترق من النفاذ لموارد غير مخصصة له",
+                    "بإغلاق خوادم الويب العامة في الـ DMZ وتوجيه حركة البيانات للشبكة الخارجية",
+                    "بإلغاء فحص الحزم عند مدخل الشبكة الخارجي لتقليل زمن الاستجابة",
+                    "بإعادة تشغيل جدار الحماية الخارجي ومحو قواعد التصفية الأمنية"
+                ],
+                correctIndex: 0,
+                hint: "انعدام الثقة يقيد الصلاحيات ويفحص السياق (الجهاز، الموقع، والمورد المطلوب) عند كل حركة."
+            },
+            // 11 (الإجابة: د)
+            {
+                type: "مفهوم أساسي",
+                q: "أين يمكن تثبيت ونشر جدران الحماية (Firewalls) من الناحية الهندسية؟",
+                choices: [
+                    "حصرياً كجهاز عتادي مستقل بين خوادم الـ DMZ والإنترنت دون أي استخدام داخلي",
+                    "فقط على أجهزة الهواتف الذكية للعاملين عن بعد ولا يمكن استخدامه على الخوادم",
+                    "داخل كابلات التوصيل الفيزيائية للشبكة دون الحاجة لأي برمجيات أو معالجة",
+                    "عند حدود الشبكة، أو داخلياً بين قطاعات الشبكة، أو كبرنامج على جهاز مضيف بذاته"
+                ],
+                correctIndex: 3,
+                hint: "جدران الحماية تتنوع بين حدودية وشبكية وبرمجية على مستوى الأجهزة المضيفة."
+            },
+            // 12 (الإجابة: جـ)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: تسمية 'المنطقة المعزولة' بهذا الاسم (Demilitarized Zone - DMZ)؟",
+                choices: [
+                    "لأنها منطقة تُعطل فيها كافة برامج الحماية والجدران النارية لتسريع التصفح",
+                    "لأنها مخصصة للاستخدامات العسكرية والدفاعية المشفرة فقط",
+                    "لأنها تمثل منطقة فاصلة ومحايدة تخضع لرقابة مشددة بين منطقة غير موثوقة ومنطقة آمنة",
+                    "لأنها تفصل بين شبكات الهاتف المحمول وشبكات الحواسيب السلكية"
+                ],
+                correctIndex: 2,
+                hint: "المصطلح مستوحى من المناطق العازلة المحايدة التي تفصل بين منطقتين مختلفتين أمنياً."
+            },
+            // 13 (الإجابة: ب)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: مسؤول شبكة لاحظ محاولات اتصال مكثفة من عناوين IP مجهولة بالمنفذ 1433 الخاص بقاعدة البيانات، ما الإجراء الصحيح؟",
+                choices: [
+                    "نقل قاعدة البيانات السرية إلى منطقة الـ DMZ لتكون أقرب للمستخدمين",
+                    "تعديل قواعد جدار الحماية لحظر أي وصول خارجي مباشر لقاعدة البيانات وقصرها على الخوادم المصرح بها",
+                    "إيقاف تشغيل نفق الـ VPN لتقليل العبء على المعالج وسرعة نقل الحزم",
+                    "السماح بالاتصال فوراً لتجنب تأخير استجابة الموقع للمستخدمين"
+                ],
+                correctIndex: 1,
+                hint: "الاتصال المباشر بقواعد البيانات من الإنترنت ثغرة جسيمة يجب حظرها بجدار الحماية."
+            },
+            // 14 (الإجابة: أ)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: وفقاً لطبقات الدفاع في العمق، فإن منع الاتصالات غير المصرح بها بجدار الحماية يمثل طبقة ........",
+                choices: [
+                    "مدخل الشبكة",
+                    "مسار الاتصال",
+                    "وضع الخوادم",
+                    "الأجهزة الطرفية"
+                ],
+                correctIndex: 0,
+                hint: "الطبقة الأولى المعنية بحراسة بوابات الدخول للشبكة."
+            },
+            // 15 (الإجابة: د)
+            {
+                type: "مفهوم أساسي",
+                q: "ما الوظيفة التي لا يقوم بها جدار الحماية التقليدي إطلاقاً؟",
+                choices: [
+                    "مراقبة حركة مرور الحزم وفقاً لعناوين IP المصدر والوجهة",
+                    "السماح بالحزم أو منعها استناداً لأرقام المنافذ وقواعد التصفية",
+                    "تسجيل محاولات الاتصال غير المصرح بها في سجلات الأحداث",
+                    "الفحص التلقائي لمحتوى الملفات وحذف الفيروسات المستقرة بالقرص الصلب"
+                ],
+                correctIndex: 3,
+                hint: "فحص ومكافحة الفيروسات داخل الملفات وظيفة مكافح الفيروسات على الأجهزة الطرفية."
+            },
+            // 16 (الإجابة: جـ)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: لماذا لا تضمن تقنية الـ VPN بمفردها أمان النظام الداخلي إذا كان جهاز الموظف في منزله مصاباً ببرمجية خبيثة؟",
+                choices: [
+                    "لأن الـ VPN يمنع اتصال الأجهزة المحمولة بالشبكة الداخلية للمؤسسة",
+                    "لأن بروتوكول التشفير في الـ VPN يتوقف تلقائياً عند وجود اتصال بالإنترنت",
+                    "لأن الـ VPN ينقل البيانات المشفرة بأمان، ولكنه لا يفحص ما إذا كان الجهاز المتصل مصاباً أو آمناً",
+                    "لأن الـ VPN يلغي عمل جدار الحماية الداخلي والخارجي للمؤسسة"
+                ],
+                correctIndex: 2,
+                hint: "النفق الآمن قد ينقل هجوماً من جهاز مصاب إلى داخل الشبكة؛ وهنا تتكامل طبقة حماية الأجهزة الطرفية."
+            },
+            // 17 (الإجابة: أ)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: ما الإجراء الذي يفرضه نهج انعدام الثقة عند محاولة موظف بالشركة الدخول إلى ملفات الرواتب السرية في غير أوقات العمل ومن دولة أخرى؟",
+                choices: [
+                    "مطالبته بالتحقق الإضافي وفحص سياق ومكان الطلب ورفض الوصول المشبوه رغم صحة كلمة المرور",
+                    "السماح له بالدخول فوراً لأن حسابه مسجل رسمياً داخل قاعدة بيانات المؤسسة",
+                    "إيقاف تشغيل الموقع الإلكتروني العام بالـ DMZ لحين عودة الموظف للعمل",
+                    "تغيير عنوان IP الخاص بجدار الحماية الخارجي"
+                ],
+                correctIndex: 0,
+                hint: "نهج انعدام الثقة يدقق في السياق (الموقع، التوقيت، ونوع المورد) ولا يكتفي ببيانات الاعتماد وحدها."
+            },
+            // 18 (الإجابة: ب)
+            {
+                type: "قل رأيك وبرر",
+                q: "قل رأيك: ما الفارق الدقيق بين 'التحقق' في الأمان التقليدي والتحقق في نهج انعدام الثقة؟",
+                choices: [
+                    "التقليدي يستخدم الـ VPN فقط، بينما انعدام الثقة يمنع استخدام التشفير إطلاقاً",
+                    "التقليدي يتحقق مرة واحدة عند البوابة الخارجية، بينما انعدام الثقة يتحقق باستمرار عند كل طلب وصول",
+                    "التقليدي يفحص سياق الوصول، بينما انعدام الثقة يمنح الثقة التلقائية لجميع الأجهزة الداخلية",
+                    "التقليدي مخصص للشركات الكبرى، بينما انعدام الثقة مخصص للمنازل فقط"
+                ],
+                correctIndex: 1,
+                hint: "التحقق المستمر في كل خطوة هو جوهر الثقة الصفرية."
+            },
+            // 19 (الإجابة: د)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: في بنية الـ DMZ النموذجية، يُوضع خادم الويب بين جدار حماية ........ وجدار حماية ........",
+                choices: [
+                    "برمجي على العميل — طرفي على جهاز التخزين",
+                    "مخصص للبريد — مخصص للأجهزة المنزلية",
+                    "لاسلكي — أحادي الاتجاه",
+                    "خارجي (مواجه للإنترنت) — داخلي (فاصل عن الشبكة الداخلية)"
+                ],
+                correctIndex: 3,
+                hint: "المنطقة المعزولة تقع بين جدارين: جدار خارجي وجدار داخلي."
+            },
+            // 20 (الإجابة: جـ)
+            {
+                type: "مفهوم أساسي",
+                q: "أي الخوادم التالية يُعد مكانه الطبيعي والآمن هو المنطقة المعزولة (DMZ)؟",
+                choices: [
+                    "خادم قاعدة بيانات الأرصدة المصرفية للعملاء",
+                    "خادم تخزين النسخ الاحتياطية المعزولة عن الشبكة",
+                    "خادم الويب العام وخادم البريد الإلكتروني الخارجي",
+                    "أجهزة الحواسيب المكتبية لموظفي إدارة الحسابات"
+                ],
+                correctIndex: 2,
+                hint: "الخوادم التي تتلقى طلبات مباشرة من الجمهور عبر الإنترنت."
+            },
+            // 21 (الإجابة: أ)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: لماذا تحتاج المؤسسة لتقنية الـ VPN حتى لو كانت تستخدم بروتوكول HTTPS في تصفح مواقعها؟",
+                choices: [
+                    "لأن HTTPS يؤمن اتصال الويب بالمتصفح، بينما الـ VPN تؤمن اتصال الجهاز بكامل موارد وشبكة العمل الداخلية",
+                    "لأن HTTPS لا يوفر أي نوع من أنواع التشفير أثناء انتقال الحزم",
+                    "لأن الـ VPN يمنع المتصفح من إرسال طلبات الـ HTTP إلى الخوادم",
+                    "لأن جدار الحماية لا يقبل فحص حزم الـ HTTPS إطلاقاً"
+                ],
+                correctIndex: 0,
+                hint: "الـ VPN ينشئ نفقاً شاملاً لكافة بروتوكولات وأنظمة الشبكة الداخلية وليس فقط تصفح الويب."
+            },
+            // 22 (الإجابة: ب)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: مستشفى يتيح للمرضى حجز المواعيد عبر الإنترنت، ويدير سجلات طبية فائقة السرية. كيف توزع هذه الأصول أمنياً؟",
+                choices: [
+                    "كافة الخوادم في الشبكة الداخلية دون أي جدار حماية لتسريع الاستجابة للمرضى",
+                    "خادم الحجز في الـ DMZ، وقواعد السجلات الطبية في الشبكة الداخلية خلف جدار حماية داخلي وبنهج انعدام الثقة",
+                    "خادم السجلات الطبية في الـ DMZ وخادم الحجز في شبكة الهواتف المحمولة",
+                    "إلغاء اتصال المستشفى بالإنترنت وحظر وصول الأطباء عن بعد"
+                ],
+                correctIndex: 1,
+                hint: "عزل الخدمات المواجهة للجمهور في الـ DMZ وحفظ السجلات الطبية في العمق الداخلي."
+            },
+            // 23 (الإجابة: د)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: تشفير الاتصال باستخدام الشبكة الافتراضية الخاصة VPN يمثل طبقة ........ في نموذج الدفاع في العمق.",
+                choices: [
+                    "مدخل الشبكة",
+                    "وضع الخوادم",
+                    "الأجهزة الطرفية",
+                    "مسار الاتصال"
+                ],
+                correctIndex: 3,
+                hint: "الطبقة الثانية المعنية بحماية القناة والمسار الذي تسلكه البيانات."
+            },
+            // 24 (الإجابة: جـ)
+            {
+                type: "مفهوم أساسي",
+                q: "ما المقصود بـ 'سياق طلب الوصول' (Access Context) في نهج انعدام الثقة؟",
+                choices: [
+                    "عدد كلمات السر المحفوظة في ذاكرة المتصفح لدى المستخدم",
+                    "سرعة اتصال الإنترنت بين الخادم والعميل بوحدة الميجابت",
+                    "الظروف المحيطة بالطلب مثل موقع المستخدم الجغرافي، وتوقيت الاتصال، وحالة أمان جهازه",
+                    "سعة القرص الصلب المتبقية في خادم قاعدة البيانات"
+                ],
+                correctIndex: 2,
+                hint: "معلومات السياق تشمل أين ومتى وكيف ومن أي جهاز تم إرسال الطلب."
+            },
+            // 25 (الإجابة: أ)
+            {
+                type: "قل رأيك وبرر",
+                q: "قل رأيك: هل يمكن لشركة صغيرة تطبيق مبدأ الدفاع في العمق دون ميزانيات ضخمة؟",
+                choices: [
+                    "نعم، بتفعيل جدار الحماية البرمجي، وتحديث الأجهزة الطرفية، وتفعيل VPN، وضبط الصلاحيات الصارمة",
+                    "لا، لأن الدفاع في العمق يتطلب حصرياً شراء خوادم سحابية عملاقة بملايين الجنيهات",
+                    "لا، لأن الدفاع في العمق مخصص للبنوك والمنشآت العسكرية فقط",
+                    "نعم، بإلغاء كلمات المرور والاعتماد على شبكات Wi-Fi مفتوحة"
+                ],
+                correctIndex: 0,
+                hint: "الدفاع في العمق فلسفة تنظيمية تجمع بين أدوات متعددة بعضها مدمج ومتاح بتكلفة يسيرة."
+            },
+            // 26 (الإجابة: ب)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: قيام جدار الحماية بـ 'إسقاط' (Drop) حزم البيانات بدلاً من قبولها؟",
+                choices: [
+                    "لأن سرعة تحميل الملف كانت أبطأ من المعدل المطلوب للمتصفح",
+                    "لأن مواصفات الحزمة (العنوان أو المنفذ أو البروتوكول) خالفت القواعد الأمنية المحددة في جدول التصفية",
+                    "لأن جدار الحماية يقوم بحذف الحزم كل 5 ثوانٍ تلقائياً لتفريغ الذاكرة",
+                    "لأن نظام التشغيل لا يدعم استقبال الرسائل النصية"
+                ],
+                correctIndex: 1,
+                hint: "الإسقاط يعني الرفض الصارم للحزمة غير المصرح بها ومنعها من الدخول."
+            },
+            // 27 (الإجابة: د)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: عند عزل خادم البريد وخادم الويب في الـ DMZ، ما المسار المسموح به لخادم الويب للوصول لقاعدة البيانات؟",
+                choices: [
+                    "اتصال مفتوح وغير مقيد يمنح خادم الويب صلاحيات المسؤول الكاملة على قاعدة البيانات",
+                    "اتصال مباشر عبر شبكة الإنترنت العامة دون المرور بأي جدار ناري",
+                    "يُحظر تماماً وجود أي اتصال بين خادم الويب وقاعدة البيانات تحت أي ظرف",
+                    "اتصال مقيد ومحدد بدقة عبر منفذ قاعدة البيانات فقط وبعد التحقق بجدار الحماية الداخلي"
+                ],
+                correctIndex: 3,
+                hint: "خادم الويب يحتاج لجلب بيانات محددة عبر استعلام مقيد بقواعد صارمة."
+            },
+            // 28 (الإجابة: جـ)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: وفقاً لمنهج الحاسب، فصل الخوادم المواجهة للجمهور عن الشبكة الداخلية باستخدام الـ DMZ يمثل طبقة ........",
+                choices: [
+                    "الأجهزة الطرفية",
+                    "مسار الاتصال",
+                    "وضع الخوادم",
+                    "مدخل الشبكة"
+                ],
+                correctIndex: 2,
+                hint: "الطبقة الثالثة في تصنيف الدفاع في العمق."
+            },
+            // 29 (الإجابة: أ)
+            {
+                type: "مفهوم أساسي",
+                q: "أي العبارات التالية تصف فرضية الأمان التقليدي للشبكات بدقة؟",
+                choices: [
+                    "افتراض أن داخل شبكة المؤسسة موثوق وآمن، وخارجها غير موثوق وخطر",
+                    "افتراض أن جميع الأجهزة الداخلية مصابة بالفيروسات ويجب حظرها فوراً",
+                    "افتراض أن السحابة تلغي تماماً الحاجة لوجود جدران الحماية الخارجية",
+                    "افتراض أن شبكات الـ VPN غير قادرة على تشفير البيانات في مسار الاتصال"
+                ],
+                correctIndex: 0,
+                hint: "الأمان التقليدي اعتمد على حماية السور الخارجي مع الثقة العمياء بما هو في الداخل."
+            },
+            // 30 (الإجابة: ب)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: خطورة منح الثقة التلقائية لمستخدم لمجرد أنه متصل عبر شبكة الكابل الداخلية للمكتب؟",
+                choices: [
+                    "لأن كابلات الشبكة تمنع جدار الحماية من فحص حركة المرور الصادرة",
+                    "لأن جهازه قد يكون مخترقاً ببرمجية تجسس، أو قد يكون مستخدماً متسللاً وصل جهازه بمنفذ شبكة غير مراقب",
+                    "لأن الأجهزة المتصلة بالكابل تفقد تشفير نظام التشغيل تلقائياً",
+                    "لأن شبكة الكابل مخصصة لنقل الصوت فقط دون البيانات الرقمية"
+                ],
+                correctIndex: 1,
+                hint: "التهديدات الداخلية أو الأجهزة المخترقة تجعل الوجود داخل المبنى غير كافٍ للثقة."
+            },
+            // 31 (الإجابة: د)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: إذا تعطلت طبقة جدار الحماية الخارجي نتيجة هجوم حجب خدمة، ما الذي يحمي بيانات الأجهزة الطرفية الداخلية؟",
+                choices: [
+                    "إلغاء تشغيل الراوتر المنزلي للعاملين عن بعد تلقائياً",
+                    "الاعتماد على خطابات البريد الورقية كبديل للشبكة",
+                    "مسح سجلات الأحداث من خوادم قواعد البيانات",
+                    "باقي طبقات الدفاع في العمق: عزل الـ DMZ، جدران الحماية الداخلية، وبرامج حماية الأجهزة الطرفية"
+                ],
+                correctIndex: 3,
+                hint: "تكامل الطبقات يضمن عدم سقوط الشبكة بكاملها عند انهيار خط الدفاع الأول."
+            },
+            // 32 (الإجابة: جـ)
+            {
+                type: "قل رأيك وبرر",
+                q: "قل رأيك: لماذا لا يُعد مصطلح 'الشبكة الافتراضية الخاصة' شبكة مادية مستقلة بأسلاكها؟",
+                choices: [
+                    "لأنها تعمل في الفضاء الخارجي عبر الأقمار الصناعية دون أي حواسيب أرضية",
+                    "لأنها لا تنقل أي بيانات حقيقية بل تحاكي سرعة المعالج فقط",
+                    "لأنها قناة اتصال منطقية مشفرة تُبنى فوق بنية تحتية لشبكة عامة قائمة بالفعل مثل الإنترنت",
+                    "لأنها مخصصة لنقل الرسوم المتحركة الافتراضية ثلاثية الأبعاد"
+                ],
+                correctIndex: 2,
+                hint: "افتراضية تعني أنها مسار منطقي مشفر وليست كابلات فيزيائية منفصلة."
+            },
+            // 33 (الإجابة: أ)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: الحدود التقليدية التي تفصل بين داخل الشبكة المفترض أمانه والإنترنت الخارجي تسمى ........",
+                choices: [
+                    "المحيط الأمني (Security Perimeter)",
+                    "النفق الكمومي المشفر",
+                    "الطبقة الطرفية العازلة",
+                    "المسار الافتراضي المتوازي"
+                ],
+                correctIndex: 0,
+                hint: "المفهوم الكلاسيكي للحدود الأمنية الذي تجاوزته الحوسبة السحابية."
+            },
+            // 34 (الإجابة: ب)
+            {
+                type: "مفهوم أساسي",
+                q: "ما الدور الذي تلعبه تقنية النفق (Tunneling) في عمل الشبكة الافتراضية الخاصة VPN؟",
+                choices: [
+                    "حفر قنوات فيزيائية داخل جدران غرف الخوادم لتبريد الأسلاك",
+                    "تغليف حزم البيانات الخاصة داخل حزم بروتوكولات عامة لنقلها بأمان وتشفيرها عبر الإنترنت",
+                    "تسريع سرعة معالجة المعالج المركزي بمقدار الضعف",
+                    "منع المستخدم من تغيير كلمة المرور الخاصة بجهازه"
+                ],
+                correctIndex: 1,
+                hint: "تقنية النفق تقوم بتغليف وتشفير الحزم للمرور الآمن عبر الشبكات العامة."
+            },
+            // 35 (الإجابة: د)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: حاجة مهندس الشبكات لتحديد قواعد جدار الحماية بعناية فائقة؟",
+                choices: [
+                    "لأن جدار الحماية يتلف فيزيائياً إذا زادت القواعد عن 3 شروط فقط",
+                    "لأن القواعد تحذف تلقائياً عند إعادة تشغيل الحاسوب إذا لم تكن مكتوبة باليد",
+                    "لأن القواعد تحدد سرعة دوران مروحة تبريد المعالج",
+                    "لأن القواعد المتساهلة تسمح بالاختراق، بينما القواعد شديدة الصرامة قد تعطل حركة الأعمال والخدمات الشرعية"
+                ],
+                correctIndex: 3,
+                hint: "الموازنة بين الأمان الوثيق وسهولة إنجاز مهام العمل اليومية دون تعطيل."
+            },
+            // 36 (الإجابة: جـ)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: شركة بها شبكة للزوار (Guest Wi-Fi) وشبكة داخلية للموظفين. كيف تفصل بينهما أمنياً؟",
+                choices: [
+                    "وضع أجهزة الزوار وقواعد البيانات في نفس نطاق الشبكة لتسهيل التواصل",
+                    "منع الزوار من استخدام الإنترنت إلا بعد كتابة كلمة سر المدير العام",
+                    "فصل حركة المرور بجدار حماية داخلي وتجزئة الشبكة لمنع وصول أجهزة الزوار للموارد الداخلية",
+                    "إيقاف تشغيل مكافحة الفيروسات على أجهزة الموظفين لتوفير الذاكرة"
+                ],
+                correctIndex: 2,
+                hint: "العزل الشبكي الداخلي يحمي أسرار المؤسسة من أجهزة الزوار غير الموثوقة."
+            },
+            // 37 (الإجابة: أ)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: وفقاً لكتاب الوزارة، فإن تثبيت جدار حماية لمنع الاتصال غير المصرح به يعتبر حماية عند ........",
+                choices: [
+                    "مدخل الشبكة",
+                    "مسار الاتصال",
+                    "وضع الخوادم",
+                    "الأجهزة الطرفية"
+                ],
+                correctIndex: 0,
+                hint: "الطبقة الأولى عند حدود الدخول."
+            },
+            // 38 (الإجابة: ب)
+            {
+                type: "مفهوم أساسي",
+                q: "ما التحدي الذي فرضته الحوسبة السحابية على نموذج حماية المحيط الأمني التقليدي؟",
+                choices: [
+                    "أن السحابة منعت استخدام كلمات المرور في تسجيل الدخول",
+                    "أن البيانات والتطبيقات لم تعد محصورة داخل مقر الشركة بل موزعة على خوادم خارجية عبر الإنترنت",
+                    "أن السحابة تتطلب أجهزة حواسيب مصنوعة من النحاس الخالص فقط",
+                    "أن تكلفة جدران الحماية السحابية أصبحت مجانية تماماً لكل العالم"
+                ],
+                correctIndex: 1,
+                hint: "خروج الموارد خارج جدران الشركة جعل السور التقليدي عاجزاً عن حمايتها بمفرده."
+            },
+            // 39 (الإجابة: د)
+            {
+                type: "قل رأيك وبرر",
+                q: "قل رأيك: هل يكفي استخدام برامج مكافحة الفيروسات لحماية شبكة بنك دون الحاجة لجدار حماية؟",
+                choices: [
+                    "نعم، لأن مكافح الفيروسات يغلق تلقائياً كافة المنافذ في الراوتر الخارجي",
+                    "نعم، لأن البنوك لا تتعرض لهجمات شبكية بل لفيروسات الفلاشات فقط",
+                    "لا، لأن مكافح الفيروسات مخصص للهواتف الذكية فقط دون الحواسيب",
+                    "لا، لأن مكافح الفيروسات يحمي الجهاز محلياً، بينما جدار الحماية يتحكم في المنافذ وحركة المرور الشبكية"
+                ],
+                correctIndex: 3,
+                hint: "التكامل بين الطبقات؛ فكل أداة تحمي جانباً محدداً ولا تغني عن الأخرى."
+            },
+            // 40 (الإجابة: جـ)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: قيام الشركات بتطبيق التحديثات الدورية لأنظمة التشغيل كأحد متطلبات الأجهزة الطرفية؟",
+                choices: [
+                    "لزيادة حجم القرص الصلب في الجهاز بعد كل تحديث",
+                    "لتغيير خلفية سطح المكتب تلقائياً كل أسبوع",
+                    "لسد الثغرات الأمنية المكتشفة التي قد يستغلها المهاجمون للنفاذ إلى الشبكة الداخلية",
+                    "لإلغاء الحاجة لاستخدام قنوات الـ VPN عند الاتصال عن بعد"
+                ],
+                correctIndex: 2,
+                hint: "ترقيع الثغرات البرمجية يمنع استغلالها كنقاط انطلاق داخلية للهجوم."
+            },
+            // 41 (الإجابة: أ)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: إذا طُلب منك اختيار آلية للتحقق من هوية مسؤول قاعدة البيانات عند الدخول من خادم الويب، فما الخيار الأمثل؟",
+                choices: [
+                    "تطبيق مبدأ انعدام الثقة بمصادقة متعددة العوامل وفحص صلاحيات الجلسة وسياق الاستعلام",
+                    "الاعتماد على عنوان الـ IP فقط والسماح له بالدخول التلقائي بدون كلمة سر",
+                    "منحه صلاحيات مفتوحة دائماً دون تسجيل أي سجلات أحداث للعمليات",
+                    "تعطيل جدار الحماية الداخلي أثناء عمل المسؤول لتسريع كتابة الأكواد"
+                ],
+                correctIndex: 0,
+                hint: "نهج انعدام الثقة يفرض التحقق المشدد حتى على الحسابات الإدارية الحساسة."
+            },
+            // 42 (الإجابة: ب)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: في شبكة مكتبية مؤمنة، إذا تعطل خادم الويب العام بالـ DMZ، فإن أجهزة الحواسيب الشخصية للموظفين ........",
+                choices: [
+                    "تتعرض للتلف الفيزيائي الفوري وتحترق معالجاتها",
+                    "تظل محمية ومعزولة بواسطة جدار الحماية الداخلي",
+                    "تتحول تلقائياً إلى خوادم ويب عامة مكشوفة للإنترنت",
+                    "تفقد اتصالها بالكهرباء وتنطفئ شاشاتها"
+                ],
+                correctIndex: 1,
+                hint: "العزل المعماري يضمن بقاء الشبكة الداخلية سالمة حتى مع سقوط خادم الـ DMZ."
+            },
+            // 43 (الإجابة: د)
+            {
+                type: "مفهوم أساسي",
+                q: "أي مما يلي يُعد من ركائز فحص السياق في معمارية انعدام الثقة (Zero Trust)؟",
+                choices: [
+                    "فحص الوزن الفيزيائي لجهاز الحاسوب وجودة لوحة المفاتيح",
+                    "التأكد من أن المستخدم يرتدي زياً رسمياً داخل منزله أثناء العمل",
+                    "فحص سعة باقة الإنترنت المنزلية للمستخدم ومقارنتها بباقة الشركة",
+                    "فحص توقيت الطلب، والموقع الجغرافي، وسلوك المستخدم المعتاد، ومستوى أمان جهازه"
+                ],
+                correctIndex: 3,
+                hint: "سياق الوصول يحلل الأنماط السلوكية والتقنية المحيطة بطلب الاتصال."
+            },
+            // 44 (الإجابة: جـ)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: حظر الاتصال المباشر بين خادم البريد بالـ DMZ وخادم قاعدة البيانات دون تدقيق؟",
+                choices: [
+                    "لأن خوادم البريد لا تتوافق برمجياً مع لغات قواعد البيانات",
+                    "لأن البريد الإلكتروني ينقل الملفات الورقية فقط دون النصوص الرقمية",
+                    "لمنع استغلال ثغرات البريد كجسر عبور لاختراق وسرقة قاعدة البيانات السرية",
+                    "لأن جدار الحماية الخارجي يمنع خوادم الـ DMZ من تشغيل الكهرباء"
+                ],
+                correctIndex: 2,
+                hint: "تقييد وتدقيق قنوات الاتصال بين الخوادم يمنع التحرك العرضي للمهاجم (Lateral Movement)."
+            },
+            // 45 (الإجابة: أ)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "فكر كمهندس: عند تصميم شبكة بنكية، أي الأصول التالية يمثل الخطر الأكبر إذا وُضع خارج جدار الحماية الداخلي؟",
+                choices: [
+                    "قاعدة بيانات أرصدة العملاء والمعاملات المصرفية",
+                    "صفحة الترحيب العامة وموقع أخبار البنك للجمهور",
+                    "شاشات عرض أسعار العملات في صالة استقبال الفرع",
+                    "طابعة إيصالات الانتظار الورقية في مدخل البنك"
+                ],
+                correctIndex: 0,
+                hint: "البيانات المالية السرية هي الأصل الحرج الأكثر استهدافاً وقيمة."
+            },
+            // 46 (الإجابة: ب)
+            {
+                type: "قل رأيك وبرر",
+                q: "قل رأيك: ما الأثر السلبي المترتب على الإفراط في تشديد قواعد جدار الحماية دون دراسة لاحتياجات العمل؟",
+                choices: [
+                    "تلف معالجات الخوادم بسبب كثرة الرموز البرمجية المكتوبة",
+                    "تعطيل حركة التطبيقات المشروعة وعجز الموظفين عن أداء مهامهم اليومية",
+                    "تحول جدار الحماية تلقائياً إلى خادم ويب عام مفتوح للجميع",
+                    "زيادة فواتير استهلاك الكهرباء في مبنى المؤسسة بمقدار الضعف"
+                ],
+                correctIndex: 1,
+                hint: "الأمان المفرط غير المدروس يعرقل إنتاجية المؤسسة وتدفق البيانات الشرعي."
+            },
+            // 47 (الإجابة: د)
+            {
+                type: "أكمل الفراغ",
+                q: "[أكمل]: الشبكة التي لا تمنح الثقة التلقائية للمستخدم لمجرد ملكيته لجهاز تابع للمؤسسة تطبق نهج ........",
+                choices: [
+                    "حماية المحيط الأمني فقط",
+                    "الاتصال المفتوح غير المقيد",
+                    "التشفير اليدوي المؤقت",
+                    "انعدام الثقة (Zero Trust)"
+                ],
+                correctIndex: 3,
+                hint: "النهج الأمني الذي يتطلب التحقق المستمر من كل وصول ومستخدم وجهاز."
+            },
+            // 48 (الإجابة: جـ)
+            {
+                type: "مفهوم أساسي",
+                q: "ما الخاصية التي تجعل قنوات الـ VPN تقلل مخاطر التنصت على شبكات الاتصال غير الموثوقة؟",
+                choices: [
+                    "حذف كافة سجلات المواقع من خوادم مزود خدمة الإنترنت فورياً",
+                    "إيقاف تشغيل بطاقة الشبكة اللاسلكية في الجهاز المتصل",
+                    "تشفير حزم البيانات المتبادلة بين طرفي الاتصال داخل النفق المنطقي",
+                    "زيادة تردد معالج الحاسوب لمضاعفة سرعة نقل الملفات"
+                ],
+                correctIndex: 2,
+                hint: "التشفير القوي يجعل البيانات المعترضة غير قابلة للقراءة أو الفهم."
+            },
+            // 49 (الإجابة: أ)
+            {
+                type: "بما تفسر / علل",
+                q: "بما تفسر: اعتبار أمان الشبكات مسؤولية تكاملية لا تعتمد على حاجز واحد؟",
+                choices: [
+                    "لأن الهجمات تتنوع في أساليبها، وتكديس الطبقات يضمن صمود النظام حتى عند اختراق أحد الدفاعات",
+                    "لأن القوانين الدولية تفرض دفع غرامات مالية على المؤسسات التي تمتلك جدار حماية واحد",
+                    "لأن الحواسيب لا تستطيع تشغيل جدار الحماية إلا بمساعدة الـ VPN فقط",
+                    "لأن كابلات الإنترنت تتوقف عن العمل إذا تم الاعتماد على حماية أحادية"
+                ],
+                correctIndex: 0,
+                hint: "التكامل بين الطبقات هو جوهر الدفاع في العمق لمواجهة سيناريوهات الهجوم المعقدة."
+            },
+            // 50 (الإجابة: ب)
+            {
+                type: "فكر كمهندس / اتخاذ قرار",
+                q: "ختاماً: ما المعادلة الهندسية الذهبية التي تحكم تصميم شبكة مؤمنة في العصر الرقمي الحديث؟",
+                choices: [
+                    "الاعتماد الكامل على جدار حماية خارجي عالي التكلفة وإلغاء كافة ضوابط الأجهزة الطرفية",
+                    "التكامل المحكم بين الدفاع في العمق وتكديس الطبقات مع تطبيق نهج انعدام الثقة والتحقق المستمر",
+                    "فصل الشبكة عن الإنترنت تماماً وحظر استخدام التقنيات السحابية والعمل عن بعد نهائياً",
+                    "استخدام كلمات مرور مكونة من 50 حرفاً والاستغناء عن قنوات الـ VPN والـ DMZ"
+                ],
+                correctIndex: 1,
+                hint: "الخلاصة المنهجية للدرس: تكديس الدفاعات والتحقق المستمر من كل عملية وصول."
+            }
+        ];
+
+        let curQIdx = 0;
+        let selectedOptions = new Array(quizBank.length).fill(null);
+
+        function renderQuickNav() {
+            const container = document.getElementById('quickNavGrid');
+            if (!container) return;
+
+            let gridHtml = '';
+            let answeredCount = 0;
+
+            quizBank.forEach((_, idx) => {
+                const isCurrent = curQIdx === idx;
+                const isAnswered = selectedOptions[idx] !== null;
+                if (isAnswered) answeredCount++;
+
+                let stateClass = 'bg-white text-beschool-slate border-slate-200 hover:border-beschool-orange';
+                if (isAnswered) {
+                    stateClass = 'bg-emerald-50 text-emerald-700 border-emerald-300 font-black';
+                }
+                if (isCurrent) {
+                    stateClass = 'bg-beschool-orange text-white border-beschool-orange ring-2 ring-orange-200 font-black';
+                }
+
+                gridHtml += `
+                    <button onclick="jumpToQuestion(${idx})" class="h-7 rounded-lg border text-[11px] flex items-center justify-center transition ${stateClass}">
+                        ${idx + 1}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = gridHtml;
+            const badge = document.getElementById('quizAnsweredBadge');
+            if (badge) {
+                badge.innerText = `تمت الإجابة: ${answeredCount} / ${quizBank.length}`;
+            }
+        }
+
+        function jumpToQuestion(targetIndex) {
+            curQIdx = targetIndex;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const qData = quizBank[curQIdx];
+            document.getElementById('activeQIndex').innerText = curQIdx + 1;
+            document.getElementById('totalQCount').innerText = quizBank.length;
+
+            renderQuickNav();
+
+            let typeBadgeColor = 'bg-orange-100 text-beschool-orange border-orange-200';
+            if (qData.type.includes('بما تفسر')) typeBadgeColor = 'bg-blue-100 text-blue-700 border-blue-200';
+            if (qData.type.includes('فكر كمهندس')) typeBadgeColor = 'bg-purple-100 text-purple-700 border-purple-200';
+            if (qData.type.includes('قل رأيك')) typeBadgeColor = 'bg-emerald-100 text-emerald-700 border-emerald-200';
+            if (qData.type.includes('أكمل')) typeBadgeColor = 'bg-amber-100 text-amber-800 border-amber-200';
+
+            let choicesHtml = '';
+            qData.choices.forEach((cText, i) => {
+                const isSelected = selectedOptions[curQIdx] === i;
+                const borderClass = isSelected 
+                    ? 'border-beschool-orange bg-orange-50 font-black ring-1 ring-beschool-orange' 
+                    : 'border-beschool-border hover:bg-slate-50 font-medium';
+                
+                const circleClass = isSelected
+                    ? 'bg-beschool-orange text-white border-beschool-orange'
+                    : 'bg-white text-beschool-slate border-slate-300';
+
+                choicesHtml += `
+                    <div onclick="pickQuizAnswer(${i})" class="p-3 sm:p-3.5 rounded-xl border ${borderClass} cursor-pointer transition flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-full border flex items-center justify-center text-xs font-bold ${circleClass} shrink-0">
+                            ${['أ', 'ب', 'ج', 'د'][i]}
+                        </div>
+                        <span class="text-xs sm:text-sm text-beschool-navy leading-relaxed">${cText}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('quizContainer').innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-black px-2.5 py-0.5 rounded-md border ${typeBadgeColor}">
+                            <i class="fa-solid fa-tag ml-1"></i> نوع السؤال: ${qData.type}
+                        </span>
+                        <button onclick="toggleHint(${curQIdx})" class="text-[11px] font-bold text-beschool-orange hover:underline flex items-center gap-1">
+                            <i class="fa-regular fa-lightbulb"></i> تلميح تعليمي
+                        </button>
+                    </div>
+
+                    <div id="hintBox_${curQIdx}" class="hidden p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs leading-relaxed">
+                        <strong class="block mb-0.5">إرشاد للتفكير:</strong>
+                        ${qData.hint}
+                    </div>
+
+                    <h4 class="text-sm sm:text-base font-black text-beschool-navy leading-relaxed pt-1">
+                        ${curQIdx + 1}. ${qData.q}
+                    </h4>
+                    
+                    <div class="space-y-2 pt-1">${choicesHtml}</div>
+                    
+                    <div id="quizAlert" class="hidden p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+                        <i class="fa-solid fa-circle-exclamation ml-1"></i> يُرجى اختيار إجابة للمتابعة!
+                    </div>
+                </div>
+            `;
+
+            const prevBtn = document.getElementById('btnPrevQ');
+            if (curQIdx > 0) prevBtn.classList.remove('hidden');
+            else prevBtn.classList.add('hidden');
+
+            const nextBtn = document.getElementById('btnNextQ');
+            if (curQIdx === quizBank.length - 1) {
+                nextBtn.innerHTML = `<span>إنهاء وحساب النتيجة</span> <i class="fa-solid fa-check-double mr-1"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>السؤال التالي</span> <i class="fa-solid fa-arrow-left mr-1"></i>`;
+            }
+        }
+
+        function toggleHint(idx) {
+            const h = document.getElementById(`hintBox_${idx}`);
+            if (h) h.classList.toggle('hidden');
+        }
+
+        function pickQuizAnswer(choiceIdx) {
+            selectedOptions[curQIdx] = choiceIdx;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (selectedOptions[curQIdx] === null) {
+                const alrt = document.getElementById('quizAlert');
+                if (alrt) alrt.classList.remove('hidden');
+                return;
+            }
+            if (curQIdx < quizBank.length - 1) {
+                curQIdx++;
+                renderQuestion();
+            } else {
+                finalizeQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (curQIdx > 0) {
+                curQIdx--;
+                renderQuestion();
+            }
+        }
+
+        function finalizeQuiz() {
+            let score = 0;
+            quizBank.forEach((item, idx) => {
+                if (selectedOptions[idx] === item.correctIndex) {
+                    score++;
+                }
+            });
+
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('btnPrevQ').classList.add('hidden');
+            document.getElementById('btnNextQ').classList.add('hidden');
+
+            const scoreBox = document.getElementById('quizScoreboard');
+            scoreBox.classList.remove('hidden');
+
+            const percent = Math.round((score / quizBank.length) * 100);
+            document.getElementById('quizScoreText').innerHTML = `
+                حصلت على <span class="text-beschool-orange text-lg font-black">${score} من أصل ${quizBank.length}</span> بنسبة <span class="text-emerald-600 text-lg font-black">${percent}%</span>.
+            `;
+
+            const statsElem = document.getElementById('quizStatsDetails');
+            if (statsElem) {
+                statsElem.innerText = `الإجابات الصحيحة: ${score} | غير الصحيحة أو المتروكة: ${quizBank.length - score}`;
+            }
+
+            // تطبيق الرسائل المحددة بدقة
+            applyTargetedFeedback(percent);
+
+            // توليد المراجعة التفصيلية لـ 50 سؤالاً
+            renderDetailedReview();
+
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        // الرسائل التحفيزية الموجهة والمناسبة لعمر الطلاب
+        function applyTargetedFeedback(percent) {
+            const card = document.getElementById('motivationCard');
+            const iconContainer = document.getElementById('scoreIconContainer');
+            if (!card) return;
+
+            const name = currentStudentName || "يا بطل";
+
+            if (percent >= 95) {
+                // 95% - 100% ممتاز
+                iconContainer.className = "w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl mx-auto shadow-sm";
+                iconContainer.innerHTML = '<i class="fa-solid fa-trophy"></i>';
+                card.className = "max-w-xl mx-auto p-4 sm:p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-400 text-right space-y-2 shadow-xs";
+                card.innerHTML = `
+                    <div class="flex items-center gap-2 text-emerald-800 font-black text-sm sm:text-base">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>
+                        <span>التقدير: ممتاز (فوق 95%)</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-emerald-950 leading-relaxed font-bold">
+                        أحسنت يا ${name}، مجهود ممتاز وتركيز واضح في حل الأسئلة الصعبة. استمر على نفس المستوى والاجتهاد في الدروس القادمة.
+                    </p>
+                `;
+            } else if (percent >= 90) {
+                // 90% - 94% جيد جداً
+                iconContainer.className = "w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-3xl mx-auto shadow-sm";
+                iconContainer.innerHTML = '<i class="fa-solid fa-medal"></i>';
+                card.className = "max-w-xl mx-auto p-4 sm:p-5 rounded-2xl bg-blue-50 border-2 border-blue-400 text-right space-y-2 shadow-xs";
+                card.innerHTML = `
+                    <div class="flex items-center gap-2 text-blue-800 font-black text-sm sm:text-base">
+                        <i class="fa-solid fa-award text-blue-600 text-lg"></i>
+                        <span>التقدير: جيد جداً (من 90% إلى 94%)</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-blue-950 leading-relaxed font-bold">
+                        أداء طيب يا ${name}، إجاباتك تدل على استيعابك للمفاهيم الأساسية. راجع النقاط البسيطة التي أخطأت فيها لتصل للدرجة الكاملة.
+                    </p>
+                `;
+            } else {
+                // أقل من 90% محتاج تذاكر
+                iconContainer.className = "w-16 h-16 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-3xl mx-auto shadow-sm";
+                iconContainer.innerHTML = '<i class="fa-solid fa-book-open-reader"></i>';
+                card.className = "max-w-xl mx-auto p-4 sm:p-5 rounded-2xl bg-amber-50 border-2 border-amber-400 text-right space-y-2 shadow-xs";
+                card.innerHTML = `
+                    <div class="flex items-center gap-2 text-amber-900 font-black text-sm sm:text-base">
+                        <i class="fa-solid fa-circle-exclamation text-amber-600 text-lg"></i>
+                        <span>النتيجة: أقل من 90% — محتاج تذاكر تاني</span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-amber-950 leading-relaxed font-bold">
+                        يا ${name}، الأسئلة كانت محتاجة تركيز وفهم دقيق، والنتيجة بتوضح إنك محتاج تراجع الشرح بتركيز أكبر وتفهم المفاهيم اللي وقعت فيها. راجع حلول الأسئلة بالأسفل وأعد الاختبار لتثبيت المعلومة.
+                    </p>
+                `;
+            }
+        }
+
+        function renderDetailedReview() {
+            const container = document.getElementById('quizReviewList');
+            if (!container) return;
+
+            let reviewHtml = '';
+
+            quizBank.forEach((qItem, idx) => {
+                const userChoiceIdx = selectedOptions[idx];
+                const isCorrect = userChoiceIdx === qItem.correctIndex;
+                const wasAnswered = userChoiceIdx !== null;
+
+                const statusBadge = isCorrect
+                    ? '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-circle-check text-emerald-600"></i> إجابة صحيحة</span>'
+                    : '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-100 text-rose-800 border border-rose-200"><i class="fa-solid fa-circle-xmark text-rose-600"></i> إجابة خاطئة</span>';
+
+                const borderCardClass = isCorrect
+                    ? 'border-emerald-200 bg-white'
+                    : 'border-rose-200 bg-rose-50/20';
+
+                const userChoiceText = wasAnswered
+                    ? qItem.choices[userChoiceIdx]
+                    : 'لم تجب على هذا السؤال';
+
+                const correctAnswerText = qItem.choices[qItem.correctIndex];
+
+                reviewHtml += `
+                    <div class="p-4 rounded-xl border ${borderCardClass} text-xs sm:text-sm space-y-2.5 text-right transition">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
+                            <span class="font-black text-beschool-navy">السؤال ${idx + 1}: ${qItem.type}</span>
+                            ${statusBadge}
+                        </div>
+                        
+                        <p class="font-bold text-beschool-slate leading-relaxed">
+                            ${qItem.q}
+                        </p>
+
+                        <div class="space-y-1.5 pt-1">
+                            <div class="p-2.5 rounded-lg ${isCorrect ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200'}">
+                                <strong>إجابتك:</strong> ${userChoiceText}
+                            </div>
+                            
+                            ${!isCorrect ? `
+                                <div class="p-2.5 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200">
+                                    <strong>الإجابة الصحيحة المعتمدة:</strong> ${correctAnswerText}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-[11px] leading-relaxed">
+                            <strong class="text-beschool-navy block mb-0.5"><i class="fa-regular fa-lightbulb text-amber-500 ml-1"></i> التوضيح العلمي والتلميح:</strong>
+                            ${qItem.hint}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = reviewHtml;
+        }
+
+        function resetQuizEngine() {
+            curQIdx = 0;
+            selectedOptions = new Array(quizBank.length).fill(null);
+            document.getElementById('quizScoreboard').classList.add('hidden');
+            document.getElementById('quizContainer').classList.remove('hidden');
+            document.getElementById('btnNextQ').classList.remove('hidden');
+            renderQuestion();
+            window.scrollTo({ top: 350, behavior: 'smooth' });
+        }
+
+        window.onload = function() {
+            renderQuestion();
+        };
+    </script>
+</body>
+</html>
